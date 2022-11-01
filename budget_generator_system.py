@@ -2,7 +2,8 @@ from distutils.log import error
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-import csv
+from openpyxl import Workbook
+import openpyxl
 import pandas as pd
 import os
 
@@ -36,16 +37,25 @@ def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
 def check_db_available(): 
-    path = 'database.csv'
+    path = 'database.xlsx'
     isExist = os.path.exists(path)
     if isExist:
-        print("DB exists")
-        db = pd.read_csv(path)
-        return db
+        wb = openpyxl.load_workbook('database.xlsx')
+        ws = wb.active
+        return ws
+    #    print("DB exists")
+    #    db = pd.read_csv(path)
+    #    #lst = list(db)
+    #    return db
     else:
-        print("Create a new DB")
-        db = pd.DataFrame(columns=['Código', 'Material', 'Costo unidad'])
-        return db
+        wb = Workbook()
+        wb.save('database.xlsx')
+        ws = wb.active
+        return ws
+
+    #    print("Create a new DB")
+    #    db = pd.DataFrame(columns=['Código', 'Material', 'Costo unidad'])
+    #    return db
 
 # CREATE WIDGETS
 titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center')
@@ -103,8 +113,15 @@ sb2.grid(column=7, row=5, padx=5, pady=5, sticky='ns')
 root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(0, weight=1)
 
+# CHECK IF THERE IS A DB PRESENT
 DB = check_db_available()
-DB = DB.append({'Código': 12, 'Material': 'Cajas', 'Costo unidad': 12.0}, ignore_index=True)
-print(DB)
+
+for row in DB.iter_rows(max_col=4, max_row=5):
+    print(row[0])
+#df = pd.DataFrame([('cod1', 'ramses', 99)], columns=['Código', 'Material', 'Costo unidad'])
+#DB = DB.append(df)
+#DB.loc[-1] = ['qqq', 'rejas', 43, 999, 9]
+#print(DB)
+#DB.to_csv('database.csv')
 root.protocol('WM_DELETE_WINDOW', on_closing)
 root.mainloop()
