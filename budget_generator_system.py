@@ -1,8 +1,10 @@
+from distutils.log import error
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 import csv
 import pandas as pd
+import os
 
 root = Tk()
 root.title("LISTA DE MATERIALES PARA ELECTRIFICAR")
@@ -32,8 +34,18 @@ def generate_Budget():
     budget_wn.config(height=600, width=500)
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
-        print('quit')
         root.destroy()
+def check_db_available(): 
+    path = 'database.csv'
+    isExist = os.path.exists(path)
+    if isExist:
+        print("DB exists")
+        db = pd.read_csv(path)
+        return db
+    else:
+        print("Create a new DB")
+        db = pd.DataFrame(columns=['Código', 'Material', 'Costo unidad'])
+        return db
 
 # CREATE WIDGETS
 titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center')
@@ -91,5 +103,8 @@ sb2.grid(column=7, row=5, padx=5, pady=5, sticky='ns')
 root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(0, weight=1)
 
+DB = check_db_available()
+DB = DB.append({'Código': 12, 'Material': 'Cajas', 'Costo unidad': 12.0}, ignore_index=True)
+print(DB)
 root.protocol('WM_DELETE_WINDOW', on_closing)
 root.mainloop()
