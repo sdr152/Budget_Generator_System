@@ -116,8 +116,11 @@ root.grid_rowconfigure(0, weight=1)
 # CHECK IF THERE IS A DB PRESENT
 DB = check_db_available()
 
-for row in DB.iter_rows(max_col=4, max_row=5):
-    print(row[0])
+for row in DB.iter_rows(max_col=4, max_row=6):
+    for v in row:
+        v.value = 99.0
+#rowsit = DB.iter_rows()
+#print(len(list(rowsit)))
 #df = pd.DataFrame([('cod1', 'ramses', 99)], columns=['Código', 'Material', 'Costo unidad'])
 #DB = DB.append(df)
 #DB.loc[-1] = ['qqq', 'rejas', 43, 999, 9]
