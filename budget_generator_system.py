@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import messagebox
 from tkinter import ttk
 import csv
 import pandas as pd
@@ -26,7 +27,13 @@ def add_toBudget():
 def remove_fromBudget():
     pass
 def generate_Budget():
-    pass
+    budget_wn = Toplevel(content)
+    budget_wn.title('Presupuesto')
+    budget_wn.config(height=600, width=500)
+def on_closing():
+    if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
+        print('quit')
+        root.destroy()
 
 # CREATE WIDGETS
 titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center')
@@ -84,4 +91,5 @@ sb2.grid(column=7, row=5, padx=5, pady=5, sticky='ns')
 root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(0, weight=1)
 
+root.protocol('WM_DELETE_WINDOW', on_closing)
 root.mainloop()
