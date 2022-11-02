@@ -1,10 +1,8 @@
-from distutils.log import error
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 from openpyxl import Workbook
 import openpyxl
-import pandas as pd
 import os
 
 root = Tk()
@@ -60,7 +58,18 @@ def on_closing():
 def fill_treeview():
     for row in ws.values:
         id = tv1.insert('', 'end', values=[row[0], row[1], row[2]])
-        
+def update_num_units(event):
+    
+    
+    # identify the double-clicked region
+    region_clicked = tv2.identify_region(event.x, event.y)
+    if region_clicked not in ('heading', 'nothing'):
+        identified_col = tv2.identify_column(event.x)
+        selected_id = tv2.selection()
+        selected_row = tv2.item(selected_id)
+        print(selected_row['values'])
+def on_double_clicked(*args):
+    print("Double Clicked!!!!!!")       
 
 # CREATE WIDGETS
 titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center')
@@ -125,24 +134,12 @@ if isExist:
     wb = openpyxl.load_workbook('database.xlsx')
     ws = wb.active
     fill_treeview()
-    
 else:
     wb = Workbook()
     ws = wb.active
-    
-#wb.save('database.xlsx')
+
+tv2.bind("<Double-1>", update_num_units)
 
 
-
-#for row in DB.iter_rows(max_col=4, max_row=6):
-#    for v in row:
-#        print(v.value)
-#rowsit = DB.iter_rows()
-#print(len(list(rowsit)))
-#df = pd.DataFrame([('cod1', 'ramses', 99)], columns=['Código', 'Material', 'Costo unidad'])
-#DB = DB.append(df)
-#DB.loc[-1] = ['qqq', 'rejas', 43, 999, 9]
-#print(DB)
-#DB.to_csv('database.csv')
 root.protocol('WM_DELETE_WINDOW', on_closing)
 root.mainloop()
