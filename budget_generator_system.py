@@ -31,21 +31,25 @@ def remove_fromDb():
     selected_item = tv1.selection()
     detaillst = tv1.item(selected_item)['values']
     print(detaillst)
-    #for rw in range(len(ws.max_column)):
-    #    print(rw)
     for id, rw in enumerate(ws.values):
         print(rw)
         if detaillst[0]==rw[0]:
             print('SAME :)')
             ws.delete_rows(id+1)
             break
-    print(list(ws.values))
     wb.save('database.xlsx')
     tv1.delete(selected_item)
 def add_toBudget():
-    pass
+    selected_item = tv1.selection()
+    if selected_item:
+        detaillst = tv1.item(selected_item)['values']
+        tv2.insert('', 'end', values=detaillst)
+        tv1.selection_remove(selected_item)
+    else:
+        raise "Debe seleccionar un item para agregar al presupuesto."
 def remove_fromBudget():
-    pass
+    selected_item = tv2.selection()
+    tv2.delete(selected_item)
 def generate_Budget():
     budget_wn = Toplevel(content)
     budget_wn.title('Presupuesto')
