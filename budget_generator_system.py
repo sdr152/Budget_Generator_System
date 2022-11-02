@@ -22,9 +22,26 @@ price = StringVar()
 
 # FUNCTIONS
 def add_toDb():
-    pass
+    if code.get() != '' and mat.get() != '' and price.get() != '':
+        id = tv1.insert('', 'end', values=[code.get(), mat.get(), price.get()])
+        ws.append([code.get(), mat.get(), price.get()])
+        wb.save('database.xlsx')
+        code.set(''), mat.set(''), price.set('')
 def remove_fromDb():
-    pass
+    selected_item = tv1.selection()
+    detaillst = tv1.item(selected_item)['values']
+    print(detaillst)
+    #for rw in range(len(ws.max_column)):
+    #    print(rw)
+    for id, rw in enumerate(ws.values):
+        print(rw)
+        if detaillst[0]==rw[0]:
+            print('SAME :)')
+            ws.delete_rows(id+1)
+            break
+    print(list(ws.values))
+    wb.save('database.xlsx')
+    tv1.delete(selected_item)
 def add_toBudget():
     pass
 def remove_fromBudget():
@@ -36,26 +53,10 @@ def generate_Budget():
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
-def check_db_available(): 
-    path = 'database.xlsx'
-    isExist = os.path.exists(path)
-    if isExist:
-        wb = openpyxl.load_workbook('database.xlsx')
-        ws = wb.active
-        return ws
-    #    print("DB exists")
-    #    db = pd.read_csv(path)
-    #    #lst = list(db)
-    #    return db
-    else:
-        wb = Workbook()
-        wb.save('database.xlsx')
-        ws = wb.active
-        return ws
-
-    #    print("Create a new DB")
-    #    db = pd.DataFrame(columns=['Código', 'Material', 'Costo unidad'])
-    #    return db
+def fill_treeview():
+    for row in ws.values:
+        id = tv1.insert('', 'end', values=[row[0], row[1], row[2]])
+        
 
 # CREATE WIDGETS
 titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center')
@@ -114,11 +115,24 @@ root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(0, weight=1)
 
 # CHECK IF THERE IS A DB PRESENT
-DB = check_db_available()
+path = 'database.xlsx'
+isExist = os.path.exists(path)
+if isExist:
+    wb = openpyxl.load_workbook('database.xlsx')
+    ws = wb.active
+    fill_treeview()
+    
+else:
+    wb = Workbook()
+    ws = wb.active
+    
+#wb.save('database.xlsx')
 
-for row in DB.iter_rows(max_col=4, max_row=6):
-    for v in row:
-        v.value = 99.0
+
+
+#for row in DB.iter_rows(max_col=4, max_row=6):
+#    for v in row:
+#        print(v.value)
 #rowsit = DB.iter_rows()
 #print(len(list(rowsit)))
 #df = pd.DataFrame([('cod1', 'ramses', 99)], columns=['Código', 'Material', 'Costo unidad'])
