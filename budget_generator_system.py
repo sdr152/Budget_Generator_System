@@ -6,9 +6,7 @@ import openpyxl
 import os
 import datetime as dt
 
-date = dt.datetime.today()
-print(date.date())
-print(type(date))
+date = dt.datetime.today().date()
 
 root = Tk()
 root.title("LISTA DE MATERIALES PARA ELECTRIFICAR")
@@ -56,7 +54,40 @@ def remove_fromBudget():
 def generate_Budget():
     budget_wn = Toplevel(content)
     budget_wn.title('Presupuesto')
-    budget_wn.config(height=600, width=500)
+    budget_wn.config(height=800, width=700)
+    
+    Save = ttk.Button(budget_wn, text='Guardar', width=25)
+    Button1 = ttk.Button(budget_wn, text='button1', width=25)
+    Button2 = ttk.Button(budget_wn, text='button2', width=25)
+    Button3 = ttk.Button(budget_wn, text='button3', width=25)
+    
+    logo_gif1 = PhotoImage(file='peginservice1.gif', width=50)
+    logo_lb1 = ttk.Label(budget_wn, image=logo_gif1, relief='ridge')
+    lbl1 = ttk.Label(budget_wn, text='Presupuesto de Materiales', justify='center', background='yellow')
+    lbl2 = ttk.Label(budget_wn, text='Fecha: ')
+    lbl3 = ttk.Label(budget_wn, text='Etiquita 2')
+    lbl4 = ttk.Label(budget_wn, text='Etiquita 3')
+    lbl5 = ttk.Label(budget_wn, text='Detalle presupuesto')
+    
+    logo_lb1.grid(column=3, row=1, rowspan=3, padx=5, pady=5, sticky='nsew')
+    lbl1.grid(column=0, row=0, columnspan=6)
+    lbl2.grid(column=0, row=1, padx=5, pady=5)
+    lbl3.grid(column=0, row=2, padx=5, pady=5)
+    lbl4.grid(column=0, row=3, padx=5, pady=5)
+    lbl5.grid(column=0, row=4, padx=5, pady=5)
+    for i in range(10):
+        label = ttk.Label(budget_wn, text='codigo', relief='solid')
+        label.grid(column=0, row=5+i, padx=5, pady=5)
+    for i in range(10):
+        label = ttk.Label(budget_wn, text='Material', relief='solid', width=50)
+        label.grid(column=1, row=5+i, columnspan=3, padx=5, pady=5)
+    for i in range(10):
+        label = ttk.Label(budget_wn, text='Price', relief='solid')
+        label.grid(column=4, row=5+i, padx=5, pady=5)
+    Button1.grid(column=0, row=16, padx=5, pady=5)
+    Button2.grid(column=1, row=16, padx=5, pady=5)
+    Button3.grid(column=2, row=16, padx=5, pady=5)
+    Save.grid(column=3, row=16, padx=5, pady=5)
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
@@ -79,11 +110,7 @@ def update_num_units(event):
         units_entry.select_range(0, END)
         units_entry.focus()
         units_entry.bind("<FocusOut>", on_focus_out)
-        units_entry.bind("<Return>", on_return)
-        #print(identified_col[1:])
-        #print(identified_row)
-        
-        
+        units_entry.bind("<Return>", on_return)       
 def on_focus_out(event):
     event.widget.destroy()
 def on_return(event):
@@ -100,7 +127,7 @@ def on_return(event):
     
 # CREATE WIDGETS
 logo_gif = PhotoImage(file='peginservice.gif')
-logo_fr = ttk.Label(content, image=logo_gif, relief='ridge') #relief: flat, groove, raised, ridge, solid, or sunken
+logo_lb = ttk.Label(content, image=logo_gif, relief='ridge') #relief: flat, groove, raised, ridge, solid, or sunken
 titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center') 
 codelbl = ttk.Label(content, text='Codigo:')
 matlbl = ttk.Label(content, text='Material:')
@@ -110,7 +137,7 @@ codeEntry = ttk.Entry(content, textvariable=code)
 matEntry = ttk.Entry(content, textvariable=mat)
 priceEntry = ttk.Entry(content, textvariable=price)
 
-Add = ttk.Button(content, text='Añadir', command=add_toDb, width=25)
+Add = ttk.Button(content, text='Agregar', command=add_toDb, width=25)
 Remove = ttk.Button(content, text='Eliminar', command=remove_fromDb, width=25)
 AddtoBudget = ttk.Button(content, text='Agregar a Presupuesto', command=add_toBudget, width=25)
 RemovefromBudget = ttk.Button(content, text='Eliminar de Presupuesto', command=remove_fromBudget, width=25)
@@ -152,7 +179,7 @@ tv1.grid(column=0, row=5, columnspan=3, padx=5, pady=5, sticky="nsew")
 tv2.grid(column=4, row=5, columnspan=3, padx=5, pady=5, sticky='nsew')
 sb1.grid(column=3, row=5, padx=5, pady=5, sticky="ns")
 sb2.grid(column=7, row=5, padx=5, pady=5, sticky='ns')
-logo_fr.grid(column=5, row=1, rowspan=3, padx=5, pady=5, sticky='we')
+logo_lb.grid(column=5, row=1, rowspan=3, padx=5, pady=5, sticky='we')
 
 root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(0, weight=1)
@@ -169,7 +196,6 @@ else:
     ws = wb.active
 
 tv2.bind("<Double-1>", update_num_units)
-
 
 root.protocol('WM_DELETE_WINDOW', on_closing)
 root.mainloop()
