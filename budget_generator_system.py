@@ -4,6 +4,11 @@ from tkinter import ttk
 from openpyxl import Workbook
 import openpyxl
 import os
+import datetime as dt
+
+date = dt.datetime.today()
+print(date.date())
+print(type(date))
 
 root = Tk()
 root.title("LISTA DE MATERIALES PARA ELECTRIFICAR")
@@ -61,6 +66,7 @@ def fill_treeview():
 def update_num_units(event):
     region_clicked = tv2.identify_region(event.x, event.y)
     identified_col = tv2.identify_column(event.x)
+    identified_row = tv2.identify_row(event.y)
     if region_clicked in ('cell') and identified_col == '#4':
         print("Region clicked!")
         selected_id = tv2.selection()
@@ -74,25 +80,28 @@ def update_num_units(event):
         units_entry.focus()
         units_entry.bind("<FocusOut>", on_focus_out)
         units_entry.bind("<Return>", on_return)
+        #print(identified_col[1:])
+        #print(identified_row)
+        
         
 def on_focus_out(event):
     event.widget.destroy()
 def on_return(event):
-    print('on return')
     vl = event.widget.get()
+    print("Return pressed")
     selected_id = tv2.selection()
+    selected_id_index = tv2.index(selected_id)
     selected_row = tv2.item(selected_id)
     detaillst = selected_row['values']
     detaillst[3] = vl
     tv2.delete(selected_id)
-    tv2.insert('', index=END, iid=selected_id, values=detaillst)
-    print(detaillst[3])
-    print(selected_row)
-   
-     
-
+    tv2.insert('', index=selected_id_index, iid=selected_id, values=detaillst)
+    event.widget.destroy()
+    
 # CREATE WIDGETS
-titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center')
+logo_gif = PhotoImage(file='peginservice.gif')
+logo_fr = ttk.Label(content, image=logo_gif, relief='ridge') #relief: flat, groove, raised, ridge, solid, or sunken
+titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center') 
 codelbl = ttk.Label(content, text='Codigo:')
 matlbl = ttk.Label(content, text='Material:')
 pricelbl = ttk.Label(content, text='Precio unidad:')
@@ -143,6 +152,7 @@ tv1.grid(column=0, row=5, columnspan=3, padx=5, pady=5, sticky="nsew")
 tv2.grid(column=4, row=5, columnspan=3, padx=5, pady=5, sticky='nsew')
 sb1.grid(column=3, row=5, padx=5, pady=5, sticky="ns")
 sb2.grid(column=7, row=5, padx=5, pady=5, sticky='ns')
+logo_fr.grid(column=5, row=1, rowspan=3, padx=5, pady=5, sticky='we')
 
 root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(0, weight=1)
