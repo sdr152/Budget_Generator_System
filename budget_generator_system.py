@@ -41,7 +41,7 @@ def add_toBudget():
     selected_item = tv1.selection()
     if selected_item:
         detaillst = tv1.item(selected_item)['values']
-        tv2.insert('', 'end', values=detaillst)
+        tv2.insert('', 'end', values=detaillst + [1])
         tv1.selection_remove(selected_item)
     else:
         raise "Debe seleccionar un item para agregar al presupuesto."
@@ -59,17 +59,37 @@ def fill_treeview():
     for row in ws.values:
         id = tv1.insert('', 'end', values=[row[0], row[1], row[2]])
 def update_num_units(event):
-    
-    
-    # identify the double-clicked region
     region_clicked = tv2.identify_region(event.x, event.y)
-    if region_clicked not in ('heading', 'nothing'):
-        identified_col = tv2.identify_column(event.x)
+    identified_col = tv2.identify_column(event.x)
+    if region_clicked in ('cell') and identified_col == '#4':
+        print("Region clicked!")
         selected_id = tv2.selection()
         selected_row = tv2.item(selected_id)
-        print(selected_row['values'])
-def on_double_clicked(*args):
-    print("Double Clicked!!!!!!")       
+        detaillst = selected_row['values']
+        bbox = tv2.bbox(selected_id, 'Unidades')
+        units_entry = ttk.Entry(tv2, width=bbox[2])
+        units_entry.place(x=bbox[0], y=bbox[1], width=bbox[2], height=bbox[3])
+        units_entry.insert(0, detaillst[3])
+        units_entry.select_range(0, END)
+        units_entry.focus()
+        units_entry.bind("<FocusOut>", on_focus_out)
+        units_entry.bind("<Return>", on_return)
+        
+def on_focus_out(event):
+    event.widget.destroy()
+def on_return(event):
+    print('on return')
+    vl = event.widget.get()
+    selected_id = tv2.selection()
+    selected_row = tv2.item(selected_id)
+    detaillst = selected_row['values']
+    detaillst[3] = vl
+    tv2.delete(selected_id)
+    tv2.insert('', index=END, iid=selected_id, values=detaillst)
+    print(detaillst[3])
+    print(selected_row)
+   
+     
 
 # CREATE WIDGETS
 titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center')
