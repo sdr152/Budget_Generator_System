@@ -11,7 +11,7 @@ date = dt.datetime.today().date()
 root = Tk()
 root.title("LISTA DE MATERIALES PARA ELECTRIFICAR")
 root.geometry('1000x600')
-
+root.iconphoto(False, PhotoImage(file='peginservice.gif'))
 # CREATE A MAIN FRAME
 content = ttk.Frame(root, padding=(5,5,12,12), borderwidth=5)
 content.grid(column=0, row=0, sticky='nsew')
@@ -52,6 +52,7 @@ def remove_fromBudget():
     selected_item = tv2.selection()
     tv2.delete(selected_item)
 def generate_Budget():
+    # COSTS CALCULATIONS
     iids_for_budget = tv2.get_children()
     detailed_lst = []
     total_item_costs_lst = []
@@ -65,11 +66,12 @@ def generate_Budget():
     mano_de_obra = round(total_costo_materiales * 0.35, 2)
     total_flete = round(total_costo_materiales * 0.10, 2)
     total_imprevistos = round((total_costo_materiales + total_flete) * 0.05, 2)
-    
     TOTAL_PROYECTO = total_costo_materiales + mano_de_obra + total_flete + total_imprevistos
     
     budget_wn = Toplevel(content, borderwidth=20)
     budget_wn.title('Presupuesto')
+    budget_wn.iconphoto('False', PhotoImage(file='peginservice.gif'))
+    
     #budget_wn.config(height=1500, width=900)
     
     #Save = ttk.Button(budget_wn, text='Guardar en PDF')
@@ -88,6 +90,12 @@ def generate_Budget():
     lbl3.grid(column=0, row=2, padx=5, pady=5, sticky='nsew')
     lbl4.grid(column=0, row=3, padx=5, pady=5, sticky='nsew')
     lbl5.grid(column=0, row=4, columnspan=2, padx=5, pady=5, sticky='nsew')
+    titles_lst = ['Codigo', 'Material', 'skip', 'Precio unidad', 'Unidades', 'Precio total']
+    for i in range(len(titles_lst)):
+        label = ttk.Label(budget_wn, text=titles_lst[i])
+        if i==2:
+            continue
+        label.grid(column=i, row=5, padx=5, pady=5)
     for i in range(len(detailed_lst)):
         label = ttk.Label(budget_wn, text=detailed_lst[i][0])
         label.grid(column=0, row=6+i, padx=5, pady=5)
@@ -105,7 +113,8 @@ def generate_Budget():
         label.grid(column=5, row=6+i, padx=5, pady=5)
 
     #Save.grid(column=5, row=100, padx=5, pady=5)
-
+    canvas = Canvas(budget_wn, bg='yellow')
+    canvas.grid(column=0, row=20, padx=5, pady=5)
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
