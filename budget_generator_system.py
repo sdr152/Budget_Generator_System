@@ -59,27 +59,25 @@ def generate_Budget():
         detailed_row = tv2.item(iid)
         values_lst = detailed_row['values']
         detailed_lst.append(values_lst)
-        total_cost_per_item = 1.15*values_lst[2]*values_lst[3]
+        total_cost_per_item = round(1.15*values_lst[2]*values_lst[3], 2)
         total_item_costs_lst.append(total_cost_per_item)
-    total_costo_materiales = sum(total_item_costs_lst)
-    mano_de_obra = total_costo_materiales * 0.35
-    total_flete = total_costo_materiales * 0.10
-    total_imprevistos = (total_costo_materiales + total_flete) * 0.05
+    total_costo_materiales = round(sum(total_item_costs_lst), 2)
+    mano_de_obra = round(total_costo_materiales * 0.35, 2)
+    total_flete = round(total_costo_materiales * 0.10, 2)
+    total_imprevistos = round((total_costo_materiales + total_flete) * 0.05, 2)
+    
     TOTAL_PROYECTO = total_costo_materiales + mano_de_obra + total_flete + total_imprevistos
     
     budget_wn = Toplevel(content, borderwidth=20)
     budget_wn.title('Presupuesto')
     #budget_wn.config(height=1500, width=900)
     
-    Button1 = ttk.Button(budget_wn, text='button1')
-    Button2 = ttk.Button(budget_wn, text='button2')
-    Button3 = ttk.Button(budget_wn, text='button3')
-    Save = ttk.Button(budget_wn, text='Guardar en PDF')
+    #Save = ttk.Button(budget_wn, text='Guardar en PDF')
 
-    logo_gif1 = PhotoImage(file='peginservice1.gif', width=235, height=125)
+    logo_gif1 = PhotoImage(file='peginservice1.gif')
     logo_lb1 = ttk.Label(budget_wn, image=logo_gif1, relief='ridge')
     lbl1 = ttk.Label(budget_wn, text='Presupuesto de Materiales', justify='center',)
-    lbl2 = ttk.Label(budget_wn, text='Fecha: ', justify='left')
+    lbl2 = ttk.Label(budget_wn, text='Fecha:')
     lbl3 = ttk.Label(budget_wn, text='Etiquita 2', justify='right')
     lbl4 = ttk.Label(budget_wn, text='Etiquita 3', justify='left')
     lbl5 = ttk.Label(budget_wn, text='Detalle presupuesto:', justify='left')
@@ -92,24 +90,21 @@ def generate_Budget():
     lbl5.grid(column=0, row=4, columnspan=2, padx=5, pady=5, sticky='nsew')
     for i in range(len(detailed_lst)):
         label = ttk.Label(budget_wn, text=detailed_lst[i][0])
-        label.grid(column=0, row=5+i, padx=5, pady=5)
+        label.grid(column=0, row=6+i, padx=5, pady=5)
     for i in range(len(detailed_lst)):
         label = ttk.Label(budget_wn, text=detailed_lst[i][1])
-        label.grid(column=1, row=5+i, columnspan=2, padx=5, pady=5, sticky='nsew')
+        label.grid(column=1, row=6+i, columnspan=2, padx=5, pady=5)
     for i in range(len(detailed_lst)):
         label = ttk.Label(budget_wn, text=detailed_lst[i][2])
-        label.grid(column=3, row=5+i, padx=5, pady=5, sticky='nsew')
+        label.grid(column=3, row=6+i, padx=5, pady=5)
     for i in range(len(detailed_lst)):
         label = ttk.Label(budget_wn, text=detailed_lst[i][3])
-        label.grid(column=4, row=5+i, padx=5, pady=5, sticky='nsew')
+        label.grid(column=4, row=6+i, padx=5, pady=5)
     for i in range(len(detailed_lst)):
         label = ttk.Label(budget_wn, text=total_item_costs_lst[i])
-        label.grid(column=5, row=5+i, padx=5, pady=5, sticky='nsew')
-    
-    Button1.grid(column=0, row=16, padx=5, pady=5)
-    Button2.grid(column=1, row=16, padx=5, pady=5)
-    Button3.grid(column=2, row=16, padx=5, pady=5)
-    Save.grid(column=3, row=16, padx=5, pady=5)
+        label.grid(column=5, row=6+i, padx=5, pady=5)
+
+    #Save.grid(column=5, row=100, padx=5, pady=5)
 
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
