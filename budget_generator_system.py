@@ -5,6 +5,7 @@ from openpyxl import Workbook
 import openpyxl
 import os
 import datetime as dt
+import subprocess
 
 date = dt.datetime.today().date()
 
@@ -54,14 +55,14 @@ def remove_fromBudget():
 def generate_Budget():
     budget_wn = Toplevel(content, borderwidth=20)
     budget_wn.title('Presupuesto')
-    budget_wn.config(height=800, width=700)
+    #budget_wn.config(height=1500, width=900)
     
     Button1 = ttk.Button(budget_wn, text='button1')
-    Button2 = ttk.Button(budget_wn, text='button2', width=25)
+    Button2 = ttk.Button(budget_wn, text='button2')
     Button3 = ttk.Button(budget_wn, text='button3')
     Save = ttk.Button(budget_wn, text='Guardar')
 
-    logo_gif1 = PhotoImage(file='peginservice1.gif', width=50, height=20)
+    logo_gif1 = PhotoImage(file='peginservice1.gif', width=235, height=125)
     logo_lb1 = ttk.Label(budget_wn, image=logo_gif1, relief='ridge')
     lbl1 = ttk.Label(budget_wn, text='Presupuesto de Materiales', justify='center',)
     lbl2 = ttk.Label(budget_wn, text='Fecha: ', justify='left')
@@ -91,6 +92,12 @@ def generate_Budget():
     Button2.grid(column=1, row=16, padx=5, pady=5)
     Button3.grid(column=2, row=16, padx=5, pady=5)
     Save.grid(column=3, row=16, padx=5, pady=5)
+    cv = Canvas(budget_wn, width=500, height=500, bg='white')
+    cv.postscript(file='tmp.ps', colormode='color')
+    process = subprocess.Popen(["ps2pdf", "tmp.ps", "result.pdf"], shell=True)
+    process.wait()
+    os.remove("tmp.ps")
+
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
