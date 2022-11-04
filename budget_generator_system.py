@@ -5,8 +5,25 @@ from openpyxl import Workbook
 import openpyxl
 import os
 import datetime as dt
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph
+from reportlab.lib.pagesizes import A4
 
+my_path = "C:\Users\Samuel Ramos\Python\Budget_Generator_System\my_pdf.pdf"
 date = dt.datetime.today().date()
+
+my_Style = ParagraphStyle('My para style',
+    fontName='Times-Roman',
+    fontSize=16,
+    alignment=0,
+    borderWidth=2,
+    borderColor='#FFFF00',
+    backColor= '#F1F1F1',
+    borderPadding = (20, 20, 20),
+    leading = 20)
+
+width, height = A4
 
 root = Tk()
 root.title("LISTA DE MATERIALES PARA ELECTRIFICAR")
@@ -109,12 +126,19 @@ def generate_Budget():
     for i in range(len(detailed_lst)):
         label = ttk.Label(budget_wn, text=total_item_costs_lst[i])
         label.grid(column=5, row=6+i, padx=5, pady=5)
-
+    
     canvas = Canvas(budget_wn, bg='yellow')
     canvas.grid(column=0, row=20, padx=5, pady=5)
     #canvas.create_image(50, 50, image=logo_gif)
     c_lbl = ttk.Label(canvas, text='PDF')
     c_lbl.grid(column=0, row=0, padx=5, pady=5)
+def gen_pdf():
+    text=t1.get('1.0', END)
+    p1 = Paragraph(text, my_Style)
+    c = canvas.Canvas(my_path, pagesize=A4)
+    p1.wrapOn(c, 300, 50) # dimensions of the paragraph
+    p1.drawOn(c, width-450, height-350) # location of the paragraph
+    c.save()
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
