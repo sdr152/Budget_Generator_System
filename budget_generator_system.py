@@ -5,7 +5,6 @@ from openpyxl import Workbook
 import openpyxl
 import os
 import datetime as dt
-import subprocess
 
 date = dt.datetime.today().date()
 
@@ -53,6 +52,17 @@ def remove_fromBudget():
     selected_item = tv2.selection()
     tv2.delete(selected_item)
 def generate_Budget():
+    iids_for_budget = tv2.get_children()
+    detailed_lst = []
+    total_item_costs_lst = []
+    for iid in iids_for_budget:
+        detailed_row = tv2.item(iid)
+        values_lst = detailed_row['values']
+        detailed_lst.append(values_lst)
+        total_cost_per_item = 1.15*values_lst[2]*values_lst[3]
+        total_item_costs_lst.append(total_cost_per_item)
+    print(detailed_lst)
+    print(total_item_costs_lst)
     budget_wn = Toplevel(content, borderwidth=20)
     budget_wn.title('Presupuesto')
     #budget_wn.config(height=1500, width=900)
@@ -60,7 +70,7 @@ def generate_Budget():
     Button1 = ttk.Button(budget_wn, text='button1')
     Button2 = ttk.Button(budget_wn, text='button2')
     Button3 = ttk.Button(budget_wn, text='button3')
-    Save = ttk.Button(budget_wn, text='Guardar')
+    Save = ttk.Button(budget_wn, text='Guardar en PDF')
 
     logo_gif1 = PhotoImage(file='peginservice1.gif', width=235, height=125)
     logo_lb1 = ttk.Label(budget_wn, image=logo_gif1, relief='ridge')
@@ -70,33 +80,32 @@ def generate_Budget():
     lbl4 = ttk.Label(budget_wn, text='Etiquita 3', justify='left')
     lbl5 = ttk.Label(budget_wn, text='Detalle presupuesto:', justify='left')
     
-    logo_lb1.grid(column=3, row=1, rowspan=3, columnspan=2, padx=5, pady=5, sticky='nsew')
+    logo_lb1.grid(column=4, row=1, rowspan=3, columnspan=2, padx=5, pady=5, sticky='nsew')
     lbl1.grid(column=0, row=0, columnspan=6, padx=5, pady=5)
     lbl2.grid(column=0, row=1, padx=5, pady=5, sticky='nsew')
     lbl3.grid(column=0, row=2, padx=5, pady=5, sticky='nsew')
     lbl4.grid(column=0, row=3, padx=5, pady=5, sticky='nsew')
     lbl5.grid(column=0, row=4, columnspan=2, padx=5, pady=5, sticky='nsew')
-    for i in range(10):
-        label = ttk.Label(budget_wn, text='codigo', relief='solid', width=5)
+    for i in range(len(detailed_lst)):
+        label = ttk.Label(budget_wn, text=detailed_lst[i][0])
         label.grid(column=0, row=5+i, padx=5, pady=5)
-    for i in range(10):
-        label = ttk.Label(budget_wn, text='Material', relief='solid')
+    for i in range(len(detailed_lst)):
+        label = ttk.Label(budget_wn, text=detailed_lst[i][1])
         label.grid(column=1, row=5+i, columnspan=2, padx=5, pady=5, sticky='nsew')
-    for i in range(10):
-        label = ttk.Label(budget_wn, text='Unidades', relief='solid')
+    for i in range(len(detailed_lst)):
+        label = ttk.Label(budget_wn, text=detailed_lst[i][2])
         label.grid(column=3, row=5+i, padx=5, pady=5, sticky='nsew')
-    for i in range(10):
-        label = ttk.Label(budget_wn, text='Price', relief='solid')
+    for i in range(len(detailed_lst)):
+        label = ttk.Label(budget_wn, text=detailed_lst[i][3])
         label.grid(column=4, row=5+i, padx=5, pady=5, sticky='nsew')
+    for i in range(len(detailed_lst)):
+        label = ttk.Label(budget_wn, text=total_item_costs_lst[i])
+        label.grid(column=5, row=5+i, padx=5, pady=5, sticky='nsew')
+    
     Button1.grid(column=0, row=16, padx=5, pady=5)
     Button2.grid(column=1, row=16, padx=5, pady=5)
     Button3.grid(column=2, row=16, padx=5, pady=5)
     Save.grid(column=3, row=16, padx=5, pady=5)
-    cv = Canvas(budget_wn, width=500, height=500, bg='white')
-    cv.postscript(file='tmp.ps', colormode='color')
-    process = subprocess.Popen(["ps2pdf", "tmp.ps", "result.pdf"], shell=True)
-    process.wait()
-    os.remove("tmp.ps")
 
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
