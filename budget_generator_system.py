@@ -61,8 +61,12 @@ def generate_Budget():
         detailed_lst.append(values_lst)
         total_cost_per_item = 1.15*values_lst[2]*values_lst[3]
         total_item_costs_lst.append(total_cost_per_item)
-    print(detailed_lst)
-    print(total_item_costs_lst)
+    total_costo_materiales = sum(total_item_costs_lst)
+    mano_de_obra = total_costo_materiales * 0.35
+    total_flete = total_costo_materiales * 0.10
+    total_imprevistos = (total_costo_materiales + total_flete) * 0.05
+    TOTAL_PROYECTO = total_costo_materiales + mano_de_obra + total_flete + total_imprevistos
+    
     budget_wn = Toplevel(content, borderwidth=20)
     budget_wn.title('Presupuesto')
     #budget_wn.config(height=1500, width=900)
