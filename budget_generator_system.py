@@ -74,8 +74,6 @@ def generate_Budget():
     
     #budget_wn.config(height=1500, width=900)
     
-    #Save = ttk.Button(budget_wn, text='Guardar en PDF')
-
     logo_gif1 = PhotoImage(file='peginservice1.gif')
     logo_lb1 = ttk.Label(budget_wn, image=logo_gif1, relief='ridge')
     lbl1 = ttk.Label(budget_wn, text='Presupuesto de Materiales', justify='center',)
@@ -112,9 +110,11 @@ def generate_Budget():
         label = ttk.Label(budget_wn, text=total_item_costs_lst[i])
         label.grid(column=5, row=6+i, padx=5, pady=5)
 
-    #Save.grid(column=5, row=100, padx=5, pady=5)
     canvas = Canvas(budget_wn, bg='yellow')
     canvas.grid(column=0, row=20, padx=5, pady=5)
+    #canvas.create_image(50, 50, image=logo_gif)
+    c_lbl = ttk.Label(canvas, text='PDF')
+    c_lbl.grid(column=0, row=0, padx=5, pady=5)
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
