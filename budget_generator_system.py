@@ -10,12 +10,12 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Paragraph
 from reportlab.lib.pagesizes import A4, LETTER
 import subprocess
-from PIL import Image
-import numpy as np
-import io
+
+
+
 
 my_path = "C:/Users/Samuel Ramos/Python/Budget_Generator_System/my_pdf.pdf"
-date = dt.datetime.today().date()
+today = dt.datetime.today().date()
 
 my_Style = ParagraphStyle('My para style',
     fontName='Times-Roman',
@@ -96,49 +96,71 @@ def generate_Budget():
     
     #budget_wn.config(height=1500, width=900)
     
-    #logo_gif1 = PhotoImage(file='peginservice1.gif')
-    #logo_lb1 = ttk.Label(budget_wn, image=logo_gif1, relief='ridge')
-    #lbl1 = ttk.Label(budget_wn, text='Presupuesto de Materiales', justify='center',)
-    #lbl2 = ttk.Label(budget_wn, text='Fecha:')
-    #lbl3 = ttk.Label(budget_wn, text='Etiquita 2', justify='right')
-    #lbl4 = ttk.Label(budget_wn, text='Etiquita 3', justify='left')
-    #lbl5 = ttk.Label(budget_wn, text='Detalle presupuesto:', justify='left')
+    logo_gif1 = PhotoImage(file='peginservice1.gif')
+    '''
+    logo_lb1 = ttk.Label(budget_wn, image=logo_gif1, relief='ridge')
+    lbl1 = ttk.Label(budget_wn, text='Presupuesto de Materiales', justify='center',)
+    lbl2 = ttk.Label(budget_wn, text='Fecha:')
+    lbl3 = ttk.Label(budget_wn, text='Etiquita 2', justify='right')
+    lbl4 = ttk.Label(budget_wn, text='Etiquita 3', justify='left')
+    lbl5 = ttk.Label(budget_wn, text='Detalle presupuesto:', justify='left')
     
-    #logo_lb1.grid(column=4, row=1, rowspan=3, columnspan=2, padx=5, pady=5, sticky='nsew')
-    #lbl1.grid(column=0, row=0, columnspan=6, padx=5, pady=5)
-    #lbl2.grid(column=0, row=1, padx=5, pady=5, sticky='nsew')
-    #lbl3.grid(column=0, row=2, padx=5, pady=5, sticky='nsew')
-    #lbl4.grid(column=0, row=3, padx=5, pady=5, sticky='nsew')
-    #lbl5.grid(column=0, row=4, columnspan=2, padx=5, pady=5, sticky='nsew')
-    #titles_lst = ['Codigo', 'Material', 'skip', 'Precio unidad', 'Unidades', 'Precio total']
-    #for i in range(len(titles_lst)):
-    #    label = ttk.Label(budget_wn, text=titles_lst[i])
-    #    if i==2:
-    #        continue
-    #    label.grid(column=i, row=5, padx=5, pady=5)
-    #for i in range(len(detailed_lst)):
-    #    label = ttk.Label(budget_wn, text=detailed_lst[i][0])
-    #    label.grid(column=0, row=6+i, padx=5, pady=5)
-    #for i in range(len(detailed_lst)):
-    #    label = ttk.Label(budget_wn, text=detailed_lst[i][1])
-    #    label.grid(column=1, row=6+i, columnspan=2, padx=5, pady=5)
-    #for i in range(len(detailed_lst)):
-    #    label = ttk.Label(budget_wn, text=detailed_lst[i][2])
-    #    label.grid(column=3, row=6+i, padx=5, pady=5)
-    #for i in range(len(detailed_lst)):
-    #    label = ttk.Label(budget_wn, text=detailed_lst[i][3])
-    #    label.grid(column=4, row=6+i, padx=5, pady=5)
-    #for i in range(len(detailed_lst)):
-    #    label = ttk.Label(budget_wn, text=total_item_costs_lst[i])
-    #    label.grid(column=5, row=6+i, padx=5, pady=5)
-    
-    canvas = Canvas(budget_wn, bg='yellow', height=height, width=width)
+    logo_lb1.grid(column=4, row=1, rowspan=3, columnspan=2, padx=5, pady=5, sticky='nsew')
+    lbl1.grid(column=0, row=0, columnspan=6, padx=5, pady=5)
+    lbl2.grid(column=0, row=1, padx=5, pady=5, sticky='nsew')
+    lbl3.grid(column=0, row=2, padx=5, pady=5, sticky='nsew')
+    lbl4.grid(column=0, row=3, padx=5, pady=5, sticky='nsew')
+    lbl5.grid(column=0, row=4, columnspan=2, padx=5, pady=5, sticky='nsew')
+    '''
+    titles_lst = ['Codigo', 'Material', 'skip', 'Precio unidad', 'Unidades', 'Precio total']
+    '''
+    for i in range(len(titles_lst)):
+        label = ttk.Label(budget_wn, text=titles_lst[i])
+        if i==2:
+            continue
+        label.grid(column=i, row=5, padx=5, pady=5)
+    for i in range(len(detailed_lst)):
+        label = ttk.Label(budget_wn, text=detailed_lst[i][0])
+        label.grid(column=0, row=6+i, padx=5, pady=5)
+    for i in range(len(detailed_lst)):
+        label = ttk.Label(budget_wn, text=detailed_lst[i][1])
+        label.grid(column=1, row=6+i, columnspan=2, padx=5, pady=5)
+    for i in range(len(detailed_lst)):
+        label = ttk.Label(budget_wn, text=detailed_lst[i][2])
+        label.grid(column=3, row=6+i, padx=5, pady=5)
+    for i in range(len(detailed_lst)):
+        label = ttk.Label(budget_wn, text=detailed_lst[i][3])
+        label.grid(column=4, row=6+i, padx=5, pady=5)
+    for i in range(len(detailed_lst)):
+        label = ttk.Label(budget_wn, text=total_item_costs_lst[i])
+        label.grid(column=5, row=6+i, padx=5, pady=5)
+    '''
+    canvas = Canvas(budget_wn, width=650, height=900, highlightbackground='red')
+    canvas.create_text(50, 50, text=f'Fecha: {today}')
+    for i in range(6):
+        if i==2:
+            continue
+        canvas.create_text(50+i*100, 150, text=titles_lst[i], justify='left')
+    for i in range(len(detailed_lst)):
+        canvas.create_text(50, 170+i*15, text=detailed_lst[i][0], justify='left', width=30, fill='gray')
+    for i in range(len(detailed_lst)):
+        canvas.create_text(150, 170+i*15, text=detailed_lst[i][1], justify='left', width=300, fill='gray')
+    for i in range(len(detailed_lst)):
+        canvas.create_text(350, 170+i*15, text=detailed_lst[i][2], justify='left', width=30, fill='gray')
+    for i in range(len(detailed_lst)):
+        canvas.create_text(450, 170+i*15, text=detailed_lst[i][3], justify='left', width=30, fill='gray')
+    for i in range(len(detailed_lst)):
+        canvas.create_text(550, 170+i*15, text=total_item_costs_lst[i], justify='left', width=30, fill='red')
     print(canvas.winfo_screenwidth())
-    canvas.grid(column=0, row=0, columnspan=6, padx=5, pady=5)
+    print(canvas.winfo_width(), canvas.winfo_height())
+    print(logo_gif.width(), logo_gif.height())
+    canvas.grid(column=0, row=50, columnspan=6, padx=5, pady=5)
     #canvas.create_rectangle(0, 200, 300, 500, outline='red')
-    for i in range(0, 600, 20):
-        canvas.create_text(50,i+100, text=f'{i}samuel ramos')
-    canvas.create_image(width,50, image=logo_gif)
+    
+    
+    canvas.create_image(540, 70, image=logo_gif)
+    
+    
 
 
 
@@ -161,6 +183,7 @@ def generate_Budget():
     #gen_pdf()
 def gen_pdf():
     #text=t1.get('1.0', END)
+    '''
     text = 'this is my first pdf!!! Samuel Ramos this is my first pdf!!! Samuel Ramos this is my first pdf!!! Samuel Ramos'
     xlst = [50, 100, 150, 200, 250]
     ylst = [300, 250, 200, 150, 100]
@@ -170,6 +193,7 @@ def gen_pdf():
     p1.drawOn(c, 0, height-100) # location of the paragraph
     c.drawImage(image='peginservice.gif', x=0, y=0)
     c.grid(xlst, ylst)
+    '''
     
     c.save()
 def on_closing():
