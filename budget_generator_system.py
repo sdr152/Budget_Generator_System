@@ -89,6 +89,8 @@ def generate_Budget():
     main_frame = Frame(budget_wn, width=650, height=600)
     main_frame.pack(fill=BOTH, expand=1)
     
+    cl_name = StringVar()
+    client_name = ttk.Entry(main_frame, textvariable=cl_name).pack(side=TOP)
     # Create a save pdf button
     save_pdf = ttk.Button(main_frame, text='Guardar como PDF', command=gen_pdf).pack(side=BOTTOM, fill=X)
     
@@ -108,8 +110,6 @@ def generate_Budget():
     second_frame = Frame(canvas, height=600)
 
     # Add new frame to a window in the canvas
-    cl_name = StringVar()
-    #client_name = ttk.Entry(canvas, textvariable=cl_name).grid(column=0, row=1)
     canvas.create_window((0,0), window=second_frame, anchor='nw')
     canvas.create_image(540, 70, image=logo_gif)
     canvas.create_text(10, 30, text=f'Fecha: {today}', anchor='w',width=100, justify='center', offset='w')
