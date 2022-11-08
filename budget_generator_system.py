@@ -6,6 +6,7 @@ import openpyxl
 import os
 import datetime as dt
 import subprocess
+import time
 
 today = dt.datetime.today().date()
 
@@ -53,6 +54,15 @@ def remove_fromBudget():
     selected_item = tv2.selection()
     tv2.delete(selected_item)
 def generate_Budget():
+    def gen_pdf(*args):
+        # Convert to PDF
+        canvas.create_image(540, 70, image=logo_gif)
+        canvas.update()
+        canvas.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=490, height=800)
+        process = subprocess.Popen(["ps2pdf", "tmp.ps", "new_pdf.pdf"], shell=True)
+        process.wait()
+        os.remove("tmp.ps")
+    
     # COSTS CALCULATIONS
     iids_for_budget = tv2.get_children()
     detailed_lst = []
@@ -69,45 +79,57 @@ def generate_Budget():
     total_imprevistos = round((total_costo_materiales + total_flete) * 0.05, 2)
     TOTAL_PROYECTO = total_costo_materiales + mano_de_obra + total_flete + total_imprevistos
     
-    budget_wn = Toplevel(content, borderwidth=20)
+    budget_wn = Toplevel(content, borderwidth=20, width=650)
     budget_wn.title('Presupuesto')
     budget_wn.iconphoto('False', PhotoImage(file='peginservice.gif'))
+
+    logo_gif = PhotoImage(file='peginservice.gif', palette=4)
+
+    # Create a main frame
+    main_frame = Frame(budget_wn, width=650, height=600)
+    main_frame.pack(fill=BOTH, expand=1)
     
-    canvas = Canvas(budget_wn, width=650, height=600, highlightbackground='red', scrollregion=(0,0, 650, 600))
-    save_pdf = ttk.Button(budget_wn, text='Generar pdf')
-    sb3 = ttk.Scrollbar(budget_wn, orient=VERTICAL, command=canvas.yview)
-    logo_gif1 = PhotoImage(file='peginservice1.gif')
-    titles_lst = ['Codigo', 'Material', 'skip', 'Precio unidad', 'Unidades', 'Precio total']
-    canvas.create_text(10, 50, text=f'Fecha: {today}', anchor='w',width=100, justify='center', offset='w')
+    # Create a save pdf button
+    save_pdf = ttk.Button(main_frame, text='Guardar como PDF', command=gen_pdf).pack(side=BOTTOM, fill=X)
+    
+    # Create a canvas
+    canvas = Canvas(main_frame, highlightbackground='red', width=650, height=700) 
+    canvas.pack(side=LEFT, fill=BOTH, expand=1)
+
+    # Create a Scrollbar
+    sb3 = ttk.Scrollbar(main_frame, orient=VERTICAL, command=canvas.yview)
+    sb3.pack(side=LEFT, fill=Y)
+    
+    # Configure canvas
+    canvas.configure(yscrollcommand=sb3.set)
+    canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
+
+    # Add another frame inside canvas
+    second_frame = Frame(canvas, height=600)
+
+    # Add new frame to a window in the canvas
+    cl_name = StringVar()
+    #client_name = ttk.Entry(canvas, textvariable=cl_name).grid(column=0, row=1)
+    canvas.create_window((0,0), window=second_frame, anchor='nw')
+    canvas.create_image(540, 70, image=logo_gif)
+    canvas.create_text(10, 30, text=f'Fecha: {today}', anchor='w',width=100, justify='center', offset='w')
+    canvas.create_text(10, 50, text=f'Nombre de cliente: Samuel David Ramos Gallo Claros Navarro', anchor='w', width=500, justify='left', offset='w')
+    canvas.create_text(10, 70, text=f'R.T.N.: 0801 1994 038109', anchor='w', width=300, justify='left', offset='w')
+    canvas.create_text(10, 90, text=f'No. Factura: 1304189234', anchor='w', width=300, justify='left', offset='w')
     canvas.create_text(10, 150, text='Codigo', anchor='w', width=100, justify='center', offset='w')
     canvas.create_text(100, 150, text='Material', anchor='w', width=100, justify='center', offset='w')
     canvas.create_text(420, 150, text='Costo unidad', anchor='w', width=100, justify='center', offset='w')
     canvas.create_text(510, 150, text='Cantidad', anchor='w', width=100, justify='center', offset='w')
     canvas.create_text(580, 150, text='Costo total', anchor='w', width=100, justify='center', offset='w')
-    canvas.create_line(10, 160, 630, 160, capstyle='projecting')
+    canvas.create_line(10, 160, 640, 160, capstyle='round')
     for i in range(len(detailed_lst)):
         canvas.create_text(10, 170+i*30, text=detailed_lst[i][0], anchor='w', justify='left', width=70, fill='black')
         canvas.create_text(60, 170+i*30, text=detailed_lst[i][1], anchor='w', justify='left', width=370, fill='black')
         canvas.create_text(450, 170+i*30, text=detailed_lst[i][2], anchor='w', justify='left', width=70, fill='black')
         canvas.create_text(530, 170+i*30, text=detailed_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         canvas.create_text(590, 170+i*30, text=total_item_costs_lst[i], anchor='w', justify='left', width=70, fill='red')
+    num_pages = len(detailed_lst)//15 + 1
     
-    print(canvas.winfo_screenwidth())
-    print(canvas.winfo_width(), canvas.winfo_height())
-    print(logo_gif.width(), logo_gif.height())
-    canvas.grid(column=0, row=0, columnspan=6, padx=5, pady=5)
-    sb3.grid(column=7, row=0, rowspan=2, sticky='ns')
-    save_pdf.grid(column=0, row=1)
-    budget_wn.config(yscrollcomman=sb3.set)
-    canvas.create_image(540, 70, image=logo_gif)
-    canvas.update()
-    canvas.postscript(file='tmp.ps', colormode='color')
-    process = subprocess.Popen(["ps2pdf", "tmp.ps", "new_pdf.pdf"], shell=True)
-    process.wait()
-    os.remove("tmp.ps")
-    
-def gen_pdf():
-    pass
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
