@@ -90,7 +90,7 @@ def generate_Budget():
     main_frame.pack(fill=BOTH, expand=1)
     
     cl_name = StringVar()
-    client_name = ttk.Entry(main_frame, textvariable=cl_name).pack(side=TOP)
+    rtn = StringVar()
     # Create a save pdf button
     save_pdf = ttk.Button(main_frame, text='Guardar como PDF', command=gen_pdf).pack(side=BOTTOM, fill=X)
     
@@ -112,10 +112,10 @@ def generate_Budget():
     # Add new frame to a window in the canvas
     canvas.create_window((0,0), window=second_frame, anchor='nw')
     canvas.create_image(540, 70, image=logo_gif)
-    canvas.create_text(10, 30, text=f'Fecha: {today}', anchor='w',width=100, justify='center', offset='w')
-    canvas.create_text(10, 50, text=f'Nombre de cliente: Samuel David Ramos Gallo Claros Navarro', anchor='w', width=500, justify='left', offset='w')
-    canvas.create_text(10, 70, text=f'R.T.N.: 0801 1994 038109', anchor='w', width=300, justify='left', offset='w')
-    canvas.create_text(10, 90, text=f'No. Factura: 1304189234', anchor='w', width=300, justify='left', offset='w')
+    canvas.create_text(10, 30, text=f'Fecha:                        {today}', anchor='w',width=300, justify='left', offset='w')
+    canvas.create_text(10, 50, text=f'Nombre de cliente:', anchor='w', width=500, justify='left', offset='w')
+    canvas.create_text(10, 70, text=f'R.T.N.:', anchor='w', width=300, justify='left', offset='w')
+    canvas.create_text(10, 90, text=f'No. Factura:             1304189234', anchor='w', width=300, justify='left', offset='w')
     canvas.create_text(10, 150, text='Codigo', anchor='w', width=100, justify='center', offset='w')
     canvas.create_text(100, 150, text='Material', anchor='w', width=100, justify='center', offset='w')
     canvas.create_text(420, 150, text='Costo unidad', anchor='w', width=100, justify='center', offset='w')
@@ -129,6 +129,8 @@ def generate_Budget():
         canvas.create_text(530, 170+i*30, text=detailed_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         canvas.create_text(590, 170+i*30, text=total_item_costs_lst[i], anchor='w', justify='left', width=70, fill='red')
     num_pages = len(detailed_lst)//15 + 1
+    #client_name_entry = ttk.Entry(main_frame, textvariable=cl_name).place(x=115, y=40, width=300, height=20)
+    #rtn_entry = ttk.Entry(main_frame, textvariable=rtn).place(x=115, y=60, width=300, height=20)
     
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
@@ -153,6 +155,14 @@ def update_num_units(event):
         units_entry.bind("<FocusOut>", on_focus_out)
         units_entry.bind("<Return>", on_return)       
 def on_focus_out(event):
+    vl = event.widget.get()
+    selected_id = tv2.selection()
+    selected_id_index = tv2.index(selected_id)
+    selected_row = tv2.item(selected_id)
+    detaillst = selected_row['values']
+    detaillst[3] = vl
+    tv2.delete(selected_id)
+    tv2.insert('', index=selected_id_index, iid=selected_id, values=detaillst)
     event.widget.destroy()
 def on_return(event):
     vl = event.widget.get()
