@@ -120,7 +120,6 @@ def generate_Budget():
     heading_labels = [('Codigo',10), ('Material',100), ('Costo Unidad',420), ('Cantidad',510), ('Costo Total',580)]
     for i in range(len(header_labels)):
         canvas.create_text(150, i*20+30, text='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', anchor='w', width=270, justify='left')
-    
     for i in range(len(heading_labels)):
         canvas.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
     
