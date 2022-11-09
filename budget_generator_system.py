@@ -110,17 +110,20 @@ def generate_Budget():
     second_frame = Frame(canvas, height=600)
 
     # Add new frame to a window in the canvas
+
     canvas.create_window((0,0), window=second_frame, anchor='nw')
+    
     canvas.create_image(540, 70, image=logo_gif)
-    canvas.create_text(10, 30, text=f'Fecha:                        {today}', anchor='w',width=300, justify='left', offset='w')
-    canvas.create_text(10, 50, text=f'Nombre de cliente:', anchor='w', width=500, justify='left', offset='w')
-    canvas.create_text(10, 70, text=f'R.T.N.:', anchor='w', width=300, justify='left', offset='w')
-    canvas.create_text(10, 90, text=f'No. Factura:             1304189234', anchor='w', width=300, justify='left', offset='w')
-    canvas.create_text(10, 150, text='Codigo', anchor='w', width=100, justify='center', offset='w')
-    canvas.create_text(100, 150, text='Material', anchor='w', width=100, justify='center', offset='w')
-    canvas.create_text(420, 150, text='Costo unidad', anchor='w', width=100, justify='center', offset='w')
-    canvas.create_text(510, 150, text='Cantidad', anchor='w', width=100, justify='center', offset='w')
-    canvas.create_text(580, 150, text='Costo total', anchor='w', width=100, justify='center', offset='w')
+    header_labels = ['Fecha:', 'Nobmre de cliente:', 'R.T.N.:', 'No. Factura:']
+    for i in range(len(header_labels)):
+        canvas.create_text(10, i*20+30, text=header_labels[i], anchor='w', width=300, justify='left')
+    heading_labels = [('Codigo',10), ('Material',100), ('Costo Unidad',420), ('Cantidad',510), ('Costo Total',580)]
+    for i in range(len(header_labels)):
+        canvas.create_text(150, i*20+30, text='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', anchor='w', width=270, justify='left')
+    
+    for i in range(len(heading_labels)):
+        canvas.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
+    
     canvas.create_line(10, 160, 640, 160, capstyle='round')
     for i in range(len(detailed_lst)):
         canvas.create_text(10, 170+i*30, text=detailed_lst[i][0], anchor='w', justify='left', width=70, fill='black')
