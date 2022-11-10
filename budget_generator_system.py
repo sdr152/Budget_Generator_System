@@ -114,12 +114,15 @@ def generate_Budget():
     canvas.create_window((0,0), window=second_frame, anchor='nw')
     
     canvas.create_image(540, 70, image=logo_gif)
-    header_labels = ['Fecha:', 'Nobmre de cliente:', 'R.T.N.:', 'No. Factura:']
+    header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:']
     for i in range(len(header_labels)):
-        canvas.create_text(10, i*20+30, text=header_labels[i], anchor='w', width=300, justify='left')
+        canvas.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
     heading_labels = [('Codigo',10), ('Material',100), ('Costo Unidad',420), ('Cantidad',510), ('Costo Total',580)]
-    for i in range(len(header_labels)):
-        canvas.create_text(150, i*20+30, text='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', anchor='w', width=270, justify='left')
+    
+    #for i in range(len(header_labels)):
+    #    canvas.create_text(150, i*20+30, text=cl_name.get(), anchor='w', width=270, justify='left')
+    canvas.create_text(150, 30, text='XXXXXXX', anchor='w', width=270, justify='left')
+    
     for i in range(len(heading_labels)):
         canvas.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
     
@@ -131,8 +134,8 @@ def generate_Budget():
         canvas.create_text(530, 170+i*30, text=detailed_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         canvas.create_text(590, 170+i*30, text=total_item_costs_lst[i], anchor='w', justify='left', width=70, fill='red')
     num_pages = len(detailed_lst)//15 + 1
-    #client_name_entry = ttk.Entry(main_frame, textvariable=cl_name).place(x=115, y=40, width=300, height=20)
-    #rtn_entry = ttk.Entry(main_frame, textvariable=rtn).place(x=115, y=60, width=300, height=20)
+    client_name_entry = ttk.Entry(main_frame, textvariable=cl_name).place(x=115, y=40, width=300, height=20)
+    rtn_entry = ttk.Entry(main_frame, textvariable=rtn).place(x=115, y=60, width=300, height=20)
     
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
