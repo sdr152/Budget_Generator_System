@@ -89,8 +89,6 @@ def generate_Budget():
     main_frame = Frame(budget_wn, width=650, height=600)
     main_frame.pack(fill=BOTH, expand=1)
     
-    cl_name = StringVar()
-    rtn = StringVar()
     # Create a save pdf button
     save_pdf = ttk.Button(main_frame, text='Guardar como PDF', command=gen_pdf).pack(side=BOTTOM, fill=X)
     
@@ -121,7 +119,6 @@ def generate_Budget():
     
     #for i in range(len(header_labels)):
     #    canvas.create_text(150, i*20+30, text=cl_name.get(), anchor='w', width=270, justify='left')
-    canvas.create_text(150, 30, text='XXXXXXX', anchor='w', width=270, justify='left')
     
     for i in range(len(heading_labels)):
         canvas.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
@@ -134,9 +131,11 @@ def generate_Budget():
         canvas.create_text(530, 170+i*30, text=detailed_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         canvas.create_text(590, 170+i*30, text=total_item_costs_lst[i], anchor='w', justify='left', width=70, fill='red')
     num_pages = len(detailed_lst)//15 + 1
-    client_name_entry = ttk.Entry(main_frame, textvariable=cl_name).place(x=115, y=40, width=300, height=20)
-    rtn_entry = ttk.Entry(main_frame, textvariable=rtn).place(x=115, y=60, width=300, height=20)
     
+    #rtn_entry = ttk.Entry(main_frame, textvariable=rtn).place(x=115, y=60, width=300, height=20)
+    cl_name = StringVar()
+    client_name_entry = ttk.Entry(main_frame, textvariable=cl_name).place(x=115, y=40, width=300, height=20)
+    canvas.create_text(150, 30, text=cl_name.get(), anchor='w', width=270, justify='left')
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
