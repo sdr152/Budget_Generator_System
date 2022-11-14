@@ -93,9 +93,12 @@ def generate_Budget():
     save_pdf = ttk.Button(main_frame, text='Guardar como PDF', command=gen_pdf).pack(side=BOTTOM, fill=X)
     
     # Create a canvas
-    canvas = Canvas(main_frame, highlightbackground='red', width=650, height=500) 
+    canvas = Canvas(main_frame, highlightbackground='black', bg='gray', width=650, height=500) 
     canvas.pack(side=LEFT, fill=BOTH, expand=1)
-
+    canvasin = Canvas(canvas, highlightbackground='red', bg='yellow', width=650)
+    canvasin.grid(column=0, row=0)
+    canvasin2 = Canvas(canvas, highlightbackground='blue', bg='light blue', width=650)
+    canvasin2.grid(column=0, row=1)
     # Create a Scrollbar
     sb3 = ttk.Scrollbar(main_frame, orient=VERTICAL, command=canvas.yview)
     sb3.pack(side=LEFT, fill=Y)
@@ -105,7 +108,7 @@ def generate_Budget():
     canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
 
     # Add another frame inside canvas
-    second_frame = Frame(canvas, height=600)
+    second_frame = Frame(canvas, height=800)
 
     # Add new frame to a window in the canvas
 
@@ -114,57 +117,54 @@ def generate_Budget():
     canvas.create_image(540, 70, image=logo_gif)
     header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:']
     for i in range(len(header_labels)):
-        canvas.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
+        canvasin.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
     heading_labels = [('Codigo',10), ('Material',100), ('Costo Unidad',420), ('Cantidad',510), ('Costo Total',580)]
     
-    #for i in range(len(header_labels)):
-    #    canvas.create_text(150, i*20+30, text=cl_name.get(), anchor='w', width=270, justify='left')
-    
     for i in range(len(heading_labels)):
-        canvas.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
+        canvasin.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
     
-    canvas.create_line(10, 160, 640, 160, capstyle='round')
+    canvasin.create_line(10, 160, 640, 160, capstyle='round')
     for i in range(len(detailed_lst)):
-        canvas.create_text(10, 170+i*30, text=detailed_lst[i][0], anchor='w', justify='left', width=70, fill='black')
-        canvas.create_text(60, 170+i*30, text=detailed_lst[i][1], anchor='w', justify='left', width=370, fill='black')
-        canvas.create_text(450, 170+i*30, text=detailed_lst[i][2], anchor='w', justify='left', width=70, fill='black')
-        canvas.create_text(530, 170+i*30, text=detailed_lst[i][3], anchor='w', justify='left', width=70, fill='black')
-        canvas.create_text(590, 170+i*30, text=total_item_costs_lst[i], anchor='w', justify='left', width=70, fill='red')
-    num_pages = len(detailed_lst)//15 + 1
+        canvasin.create_text(10, 170+i*30, text=detailed_lst[i][0], anchor='w', justify='left', width=70, fill='black')
+        canvasin.create_text(60, 170+i*30, text=detailed_lst[i][1], anchor='w', justify='left', width=370, fill='black')
+        canvasin.create_text(450, 170+i*30, text=detailed_lst[i][2], anchor='w', justify='left', width=70, fill='black')
+        canvasin.create_text(530, 170+i*30, text=detailed_lst[i][3], anchor='w', justify='left', width=70, fill='black')
+        canvasin.create_text(590, 170+i*30, text=total_item_costs_lst[i], anchor='w', justify='left', width=70, fill='red')
     
-    #rtn_entry = ttk.Entry(main_frame, textvariable=rtn).place(x=115, y=60, width=300, height=20)
     def on_enter1(event):
         vl = event.widget.get()
-        canvas.create_text(150, 50, text=vl, anchor='w', width=270, justify='left')
+        canvasin.create_text(150, 50, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
     def on_enter2(event):
         vl = event.widget.get()
-        canvas.create_text(150, 70, text=vl, anchor='w', width=270, justify='left')
+        canvasin.create_text(150, 70, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
     def on_enter3(event):
         vl = event.widget.get()
-        canvas.create_text(150, 90, text=vl, anchor='w', width=270, justify='left')
+        canvasin.create_text(150, 90, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
 
     # Fecha
-    canvas.create_text(150, 30, text=today, anchor='w', width=270, justify='left')
+    canvasin.create_text(150, 30, text=today, anchor='w', width=270, justify='left')
     # Client name entry
     cl_name = StringVar()
-    client_name_entry = ttk.Entry(canvas, textvariable=cl_name)
+    client_name_entry = ttk.Entry(canvasin, textvariable=cl_name)
     client_name_entry.place(x=115, y=40, width=300, height=20)
     client_name_entry.bind("<Return>", on_enter1)
 
     # RTN entry
     rtn = StringVar()
-    rtn_entry = ttk.Entry(canvas, textvariable=rtn)
+    rtn_entry = ttk.Entry(canvasin, textvariable=rtn)
     rtn_entry.place(x=115, y=60, width=300, height=20)
     rtn_entry.bind('<Return>', on_enter2)
     # N. Factura entry
     factura = StringVar()
-    factura_entry = ttk.Entry(canvas, textvariable=factura)
+    factura_entry = ttk.Entry(canvasin, textvariable=factura)
     factura_entry.place(x=115, y=80, width=300, height=20)
     factura_entry.bind('<Return>', on_enter3)
     
+    num_pages = len(detailed_lst)//15 + 1
+    print(detailed_lst)
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
