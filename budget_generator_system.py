@@ -86,14 +86,14 @@ def generate_Budget():
     logo_gif = PhotoImage(file='peginservice.gif', palette=4)
 
     # Create a main frame
-    main_frame = Frame(budget_wn, width=650, height=600)
+    main_frame = Frame(budget_wn, width=650, height=500)
     main_frame.pack(fill=BOTH, expand=1)
     
     # Create a save pdf button
     save_pdf = ttk.Button(main_frame, text='Guardar como PDF', command=gen_pdf).pack(side=BOTTOM, fill=X)
     
     # Create a canvas
-    canvas = Canvas(main_frame, highlightbackground='red', width=650, height=700) 
+    canvas = Canvas(main_frame, highlightbackground='red', width=650, height=500) 
     canvas.pack(side=LEFT, fill=BOTH, expand=1)
 
     # Create a Scrollbar
@@ -133,9 +133,38 @@ def generate_Budget():
     num_pages = len(detailed_lst)//15 + 1
     
     #rtn_entry = ttk.Entry(main_frame, textvariable=rtn).place(x=115, y=60, width=300, height=20)
+    def on_enter1(event):
+        vl = event.widget.get()
+        canvas.create_text(150, 50, text=vl, anchor='w', width=270, justify='left')
+        event.widget.destroy()
+    def on_enter2(event):
+        vl = event.widget.get()
+        canvas.create_text(150, 70, text=vl, anchor='w', width=270, justify='left')
+        event.widget.destroy()
+    def on_enter3(event):
+        vl = event.widget.get()
+        canvas.create_text(150, 90, text=vl, anchor='w', width=270, justify='left')
+        event.widget.destroy()
+
+    # Fecha
+    canvas.create_text(150, 30, text=today, anchor='w', width=270, justify='left')
+    # Client name entry
     cl_name = StringVar()
-    client_name_entry = ttk.Entry(main_frame, textvariable=cl_name).place(x=115, y=40, width=300, height=20)
-    canvas.create_text(150, 30, text=cl_name.get(), anchor='w', width=270, justify='left')
+    client_name_entry = ttk.Entry(canvas, textvariable=cl_name)
+    client_name_entry.place(x=115, y=40, width=300, height=20)
+    client_name_entry.bind("<Return>", on_enter1)
+
+    # RTN entry
+    rtn = StringVar()
+    rtn_entry = ttk.Entry(canvas, textvariable=rtn)
+    rtn_entry.place(x=115, y=60, width=300, height=20)
+    rtn_entry.bind('<Return>', on_enter2)
+    # N. Factura entry
+    factura = StringVar()
+    factura_entry = ttk.Entry(canvas, textvariable=factura)
+    factura_entry.place(x=115, y=80, width=300, height=20)
+    factura_entry.bind('<Return>', on_enter3)
+    
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
