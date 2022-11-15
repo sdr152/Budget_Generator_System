@@ -56,9 +56,9 @@ def remove_fromBudget():
 def generate_Budget():
     def gen_pdf(*args):
         # Convert to PDF
-        canvas.create_image(540, 70, image=logo_gif)
-        canvas.update()
-        canvas.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=490, height=800)
+        canvasin.create_image(540, 70, image=logo_gif)
+        canvasin.update()
+        canvasin.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=480, height=800)
         process = subprocess.Popen(["ps2pdf", "tmp.ps", "new_pdf.pdf"], shell=True)
         process.wait()
         os.remove("tmp.ps")
@@ -79,7 +79,9 @@ def generate_Budget():
     total_imprevistos = round((total_costo_materiales + total_flete) * 0.05, 2)
     TOTAL_PROYECTO = total_costo_materiales + mano_de_obra + total_flete + total_imprevistos
     
-    budget_wn = Toplevel(content, borderwidth=20, width=650)
+    sublsts = list(create_sublists(detailed_lst, 20))
+
+    budget_wn = Toplevel(content, borderwidth=20, width=650, height=500)
     budget_wn.title('Presupuesto')
     budget_wn.iconphoto('False', PhotoImage(file='peginservice.gif'))
 
@@ -95,24 +97,37 @@ def generate_Budget():
     # Create a canvas
     canvas = Canvas(main_frame, highlightbackground='black', bg='gray', width=650, height=500) 
     canvas.pack(side=LEFT, fill=BOTH, expand=1)
-    canvasin = Canvas(canvas, highlightbackground='red', bg='yellow', width=650)
+    canvasin = Canvas(canvas, highlightbackground='red', bg='yellow', width=650, height=300)
     canvasin.grid(column=0, row=0)
-    canvasin2 = Canvas(canvas, highlightbackground='blue', bg='light blue', width=650)
+    canvasin2 = Canvas(canvas, highlightbackground='blue', bg='light blue', width=650, height=200)
     canvasin2.grid(column=0, row=1)
+    canvasin3 = Canvas(canvas, highlightbackground='purple', bg='magenta', width=650, height=900)
+    canvasin3.grid(column=0, row=2)
     # Create a Scrollbar
-    sb3 = ttk.Scrollbar(main_frame, orient=VERTICAL, command=canvas.yview)
-    sb3.pack(side=LEFT, fill=Y)
-    
+    sb3 = ttk.Scrollbar(canvas, orient=VERTICAL, command=canvasin.yview)
+    sb3.grid(column=1, row=0, sticky='ns')
+    sb4 = ttk.Scrollbar(canvas, orient=VERTICAL, command=canvasin2.yview)
+    sb4.grid(column=1, row=1, sticky='ns')
+    sb5 = ttk.Scrollbar(canvas, orient=VERTICAL, command=canvasin3.yview)
+    sb5.grid(column=1, row=2, sticky='ns')
+    mainsb = ttk.Scrollbar(main_frame, orient=VERTICAL, command=canvas.yview)
+    mainsb.pack(side=LEFT, fill=Y)
     # Configure canvas
-    canvas.configure(yscrollcommand=sb3.set)
+    canvas.configure(yscrollcommand=mainsb.set)
     canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
-
+    canvasin.configure(yscrollcommand=sb3.set)
+    canvasin.bind('<Configure>', lambda e: canvasin.configure(scrollregion=canvasin.bbox('all')))
+    canvasin2.configure(yscrollcommand=sb4.set)
+    canvasin2.bind('<Configure>', lambda e: canvasin2.configure(scrollregion=canvasin2.bbox('all')))
+    canvasin3.configure(yscrollcommand=sb5.set)
+    canvasin3.bind('<Configure>', lambda e: canvasin3.configure(scrollregion=canvasin3.bbox('all')))
+    canvasin.grid_forget()
     # Add another frame inside canvas
     second_frame = Frame(canvas, height=800)
 
     # Add new frame to a window in the canvas
 
-    canvas.create_window((0,0), window=second_frame, anchor='nw')
+    canvas.create_window((0,0), window=second_frame, anchor='nw', height=900)
     
     canvas.create_image(540, 70, image=logo_gif)
     header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:']
@@ -164,7 +179,11 @@ def generate_Budget():
     factura_entry.bind('<Return>', on_enter3)
     
     num_pages = len(detailed_lst)//15 + 1
-    print(detailed_lst)
+    sublsts = list(create_sublists(detailed_lst, 20))
+    
+def create_sublists(lst, size):
+    for i in range(0, len(lst), size):
+        yield lst[i:i+size]
 def on_closing():
     if messagebox.askokcancel('Quit', 'Do you wanto to quit?'):
         root.destroy()
