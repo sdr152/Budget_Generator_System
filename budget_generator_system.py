@@ -80,7 +80,7 @@ def generate_Budget():
     
     sublsts = list(create_sublists(detailed_lst, 20))
 
-    budget_wn = Toplevel(content, borderwidth=20, width=650, height=500)
+    budget_wn = Toplevel(content, borderwidth=20, width=650)
     budget_wn.title('Presupuesto')
     budget_wn.iconphoto('False', PhotoImage(file='peginservice.gif'))
 
