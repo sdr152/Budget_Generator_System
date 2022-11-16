@@ -8,9 +8,6 @@ import datetime as dt
 import subprocess
 import time
 
-
-
-
 root = Tk()
 root.title("LISTA DE MATERIALES PARA ELECTRIFICAR")
 root.geometry('1000x600')
@@ -24,8 +21,6 @@ today = dt.datetime.today().date()
 code = StringVar()
 mat = StringVar()
 price = StringVar()
-
-# WIDGETS
 
 # FUNCTIONS
 def add_toDb():
@@ -101,8 +96,6 @@ def generate_Budget():
     # Create a canvas
     canvas = Canvas(main_frame, highlightbackground='black', bg='gray', width=650, height=500) 
     canvas.pack(side=LEFT, fill=BOTH, expand=1)
-    #canvasin = Canvas(canvas, highlightbackground='red', bg='yellow', width=650, height=300)
-    #canvasin.grid(column=0, row=0)
     
     # Create a Scrollbar
     sb3 = ttk.Scrollbar(canvas, orient=VERTICAL, command=canvas.yview)
@@ -134,10 +127,10 @@ def generate_Budget():
         canvas.create_text(450, 170+i*30, text=detailed_lst[i][2], anchor='w', justify='left', width=70, fill='black')
         canvas.create_text(530, 170+i*30, text=detailed_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         canvas.create_text(590, 170+i*30, text=total_item_costs_lst[i], anchor='w', justify='left', width=70, fill='red')
-    canvasin = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650, height=300)
-    canvasin.grid(column=0, row=0)
-    canvasin2 = Canvas(second_frame, highlightbackground='blue', bg='cyan', width=650, height=300)
-    canvasin2.grid(column=0, row=1)
+    #canvasin = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650, height=300)
+    #canvasin.grid(column=0, row=0)
+    #canvasin2 = Canvas(second_frame, highlightbackground='blue', bg='cyan', width=650, height=300)
+    #canvasin2.grid(column=0, row=1)
     def on_enter1(event):
         vl = event.widget.get()
         canvas.create_text(150, 50, text=vl, anchor='w', width=270, justify='left')
