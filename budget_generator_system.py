@@ -57,7 +57,7 @@ def generate_Budget():
         # Convert to PDF
         canvas.create_image(540, 70, image=logo_gif)
         canvas.update()
-        canvas.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=480, height=800)
+        canvas.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=490, height=800)
         process = subprocess.Popen(["ps2pdf", "tmp.ps", "new_pdf.pdf"], shell=True)
         process.wait()
         os.remove("tmp.ps")
