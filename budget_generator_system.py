@@ -80,7 +80,7 @@ def generate_Budget():
     
     sublsts = list(create_sublists(detailed_lst, 20))
 
-    budget_wn = Toplevel(content, borderwidth=20, width=650)
+    budget_wn = Toplevel(content, borderwidth=20, width=650, height=500)
     budget_wn.title('Presupuesto')
     budget_wn.iconphoto('False', PhotoImage(file='peginservice.gif'))
 
@@ -109,9 +109,10 @@ def generate_Budget():
     second_frame = Frame(canvas, height=800)
     
     # Add new frame to a window in the canvas
-    canvas.create_window((0,0), window=second_frame, anchor='nw', height=900)
+    canvas.create_window((0,0), window=second_frame, anchor='nw', height=800)
     
     canvas.create_image(540, 70, image=logo_gif)
+    
     header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:']
     for i in range(len(header_labels)):
         canvas.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
