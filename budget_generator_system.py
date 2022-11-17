@@ -98,8 +98,8 @@ def generate_Budget():
     canvas.pack(side=LEFT, fill=BOTH, expand=1)
     
     # Create a Scrollbar
-    sb3 = ttk.Scrollbar(canvas, orient=VERTICAL, command=canvas.yview)
-    sb3.pack(side=RIGHT, fill=Y)
+    sb3 = ttk.Scrollbar(main_frame, orient=VERTICAL, command=canvas.yview)
+    sb3.pack(side=LEFT, fill=Y)
  
     # Configure canvas
     canvas.configure(yscrollcommand=sb3.set)
@@ -132,6 +132,21 @@ def generate_Budget():
     #canvasin.grid(column=0, row=0)
     #canvasin2 = Canvas(second_frame, highlightbackground='blue', bg='cyan', width=650, height=300)
     #canvasin2.grid(column=0, row=1)
+    
+    for i in range(len(sublsts)):
+        cv = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650, height=300)
+        cv.grid(column=0, row=i)
+        for j in range(len(header_labels)):
+            cv.create_text(10, j*20+30, text=header_labels[j], anchor='w', width=300, justify='left')
+        heading_labels = [('Codigo',10), ('Material',100), ('Costo Unidad',420), ('Cantidad',510), ('Costo Total',580)]
+    
+        for i in range(len(heading_labels)):
+            cv.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
+    
+        cv.create_line(10, 160, 640, 160, capstyle='round')
+    
+    #cvs = list(gen_canvas(sublsts, second_frame))
+    print("CANVAS:  ", cvs)
     def on_enter1(event):
         vl = event.widget.get()
         canvas.create_text(150, 50, text=vl, anchor='w', width=270, justify='left')
@@ -166,7 +181,9 @@ def generate_Budget():
     
     num_pages = len(detailed_lst)//15 + 1
     sublsts = list(create_sublists(detailed_lst, 20))
-   
+def gen_canvas(slst, frame):
+    for i in range(len(slst)):
+        yield Canvas(frame, highlightbackground='red', bg='yellow', width=650, height=300)
 def create_sublists(lst, size):
     for i in range(0, len(lst), size):
         yield lst[i:i+size]
