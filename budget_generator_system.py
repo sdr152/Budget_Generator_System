@@ -55,9 +55,9 @@ def remove_fromBudget():
 def generate_Budget():
     def gen_pdf(*args):
         # Convert to PDF
-        canvas.create_image(540, 70, image=logo_gif)
-        canvas.update()
-        canvas.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=490, height=800)
+        cv.create_image(540, 70, image=logo_gif)
+        cv.update()
+        cv.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=490, height=800)
         process = subprocess.Popen(["ps2pdf", "tmp.ps", "new_pdf.pdf"], shell=True)
         process.wait()
         os.remove("tmp.ps")
@@ -85,7 +85,7 @@ def generate_Budget():
     logo_gif = PhotoImage(file='peginservice.gif', palette=4)
 
     # Create a main frame
-    main_frame = Frame(budget_wn, width=650, height=500)
+    main_frame = Frame(budget_wn, width=650) #h 500
     main_frame.pack(fill=BOTH, expand=1)
     
     # Create a save pdf button
@@ -104,28 +104,15 @@ def generate_Budget():
     canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
 
     # Add another frame inside canvas
-    second_frame = Frame(canvas, height=800)
+    second_frame = Frame(canvas) # h 800
     
     # Add new frame to a window in the canvas
-    canvas.create_window((0,0), window=second_frame, anchor='nw', height=800)
+    canvas.create_window((0,0), window=second_frame, anchor='nw', height=1500) #h 800
     
     canvas.create_image(540, 70, image=logo_gif)
     
     header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:']
-    #for i in range(len(header_labels)):
-    #    canvas.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
-    
     heading_labels = [('Codigo',10), ('Material',100), ('Costo Unidad',420), ('Cantidad',510), ('Costo Total',580)]
-    #for i in range(len(heading_labels)):
-    #    canvas.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
-    
-    canvas.create_line(10, 160, 640, 160, capstyle='round')
-    #for i in range(len(detailed_lst)):
-    #    canvas.create_text(10, 170+i*30, text=detailed_lst[i][0], anchor='w', justify='left', width=70, fill='black')
-    #    canvas.create_text(60, 170+i*30, text=detailed_lst[i][1], anchor='w', justify='left', width=370, fill='black')
-    #    canvas.create_text(450, 170+i*30, text=detailed_lst[i][2], anchor='w', justify='left', width=70, fill='black')
-    #    canvas.create_text(530, 170+i*30, text=detailed_lst[i][3], anchor='w', justify='left', width=70, fill='black')
-    #    canvas.create_text(590, 170+i*30, text=total_item_costs_lst[i], anchor='w', justify='left', width=70, fill='red')
     
     def on_enter1(event):
         vl = event.widget.get()
@@ -162,11 +149,13 @@ def generate_Budget():
     num_pages = len(detailed_lst)//15 + 1
     sublsts = list(create_sublists(detailed_lst, 20))
     total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
+    print(len(sublsts), len(total_item_costs_sublsts))
     for idx in range(len(sublsts)):
         sub_lst = sublsts[idx]
         cost_sub_lst = total_item_costs_sublsts[idx]
-        cv = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650)
-        cv.pack(side=TOP, fill=BOTH, expand=1)
+        cv = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650, height=700) #h 600
+        #cv.pack(side=TOP, fill=BOTH, expand=1)
+        cv.grid(column=0, row=idx)
         for i in range(len(header_labels)):
             cv.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
         for i in range(len(heading_labels)):
