@@ -77,8 +77,6 @@ def generate_Budget():
     total_flete = round(total_costo_materiales * 0.10, 2)
     total_imprevistos = round((total_costo_materiales + total_flete) * 0.05, 2)
     TOTAL_PROYECTO = total_costo_materiales + mano_de_obra + total_flete + total_imprevistos
-    
-    sublsts = list(create_sublists(detailed_lst, 20))
 
     budget_wn = Toplevel(content, borderwidth=20, width=650)
     budget_wn.title('Presupuesto')
@@ -94,11 +92,11 @@ def generate_Budget():
     save_pdf = ttk.Button(main_frame, text='Guardar como PDF', command=gen_pdf).pack(side=BOTTOM, fill=X)
     
     # Create a canvas
-    canvas = Canvas(main_frame, highlightbackground='black', bg='gray', width=650, height=500) 
+    canvas = Canvas(main_frame, highlightbackground='black', bg='gray', width=650) 
     canvas.pack(side=LEFT, fill=BOTH, expand=1)
     
     # Create a Scrollbar
-    sb3 = ttk.Scrollbar(canvas, orient=VERTICAL, command=canvas.yview)
+    sb3 = ttk.Scrollbar(main_frame, orient=VERTICAL, command=canvas.yview)
     sb3.pack(side=RIGHT, fill=Y)
  
     # Configure canvas
@@ -114,12 +112,12 @@ def generate_Budget():
     canvas.create_image(540, 70, image=logo_gif)
     
     header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:']
-    for i in range(len(header_labels)):
-        canvas.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
-    heading_labels = [('Codigo',10), ('Material',100), ('Costo Unidad',420), ('Cantidad',510), ('Costo Total',580)]
+    #for i in range(len(header_labels)):
+    #    canvas.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
     
-    for i in range(len(heading_labels)):
-        canvas.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
+    heading_labels = [('Codigo',10), ('Material',100), ('Costo Unidad',420), ('Cantidad',510), ('Costo Total',580)]
+    #for i in range(len(heading_labels)):
+    #    canvas.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
     
     canvas.create_line(10, 160, 640, 160, capstyle='round')
     for i in range(len(detailed_lst)):
@@ -128,10 +126,7 @@ def generate_Budget():
         canvas.create_text(450, 170+i*30, text=detailed_lst[i][2], anchor='w', justify='left', width=70, fill='black')
         canvas.create_text(530, 170+i*30, text=detailed_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         canvas.create_text(590, 170+i*30, text=total_item_costs_lst[i], anchor='w', justify='left', width=70, fill='red')
-    #canvasin = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650, height=300)
-    #canvasin.grid(column=0, row=0)
-    #canvasin2 = Canvas(second_frame, highlightbackground='blue', bg='cyan', width=650, height=300)
-    #canvasin2.grid(column=0, row=1)
+    
     def on_enter1(event):
         vl = event.widget.get()
         canvas.create_text(150, 50, text=vl, anchor='w', width=270, justify='left')
@@ -166,7 +161,27 @@ def generate_Budget():
     
     num_pages = len(detailed_lst)//15 + 1
     sublsts = list(create_sublists(detailed_lst, 20))
-   
+    total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
+    print(total_item_costs_sublsts)
+    for idx in range(len(sublsts)):
+        sub_lst = sublsts[idx]
+        cost_sub_lst = total_item_costs_sublsts[idx]
+        cv = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650)
+        cv.pack(side=TOP, fill=BOTH, expand=1)
+        for i in range(len(header_labels)):
+            cv.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
+        for i in range(len(heading_labels)):
+            cv.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
+        cv.create_line(10, 160, 640, 160, capstyle='round')
+        for i in range(len(sub_lst)):
+            cv.create_text(10, 170+i*30, text=sub_lst[i][0], anchor='w', justify='left', width=70, fill='black')
+            cv.create_text(60, 170+i*30, text=sub_lst[i][1], anchor='w', justify='left', width=370, fill='black')
+            cv.create_text(450, 170+i*30, text=sub_lst[i][2], anchor='w', justify='left', width=70, fill='black')
+            cv.create_text(530, 170+i*30, text=sub_lst[i][3], anchor='w', justify='left', width=70, fill='black')
+        for i in range(len(cost_sub_lst)):
+            cv.create_text(590, 170+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
+        print(sub_lst)
+        print("_____")
 def create_sublists(lst, size):
     for i in range(0, len(lst), size):
         yield lst[i:i+size]
