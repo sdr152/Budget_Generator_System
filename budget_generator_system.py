@@ -33,7 +33,6 @@ def add_toDb():
 def remove_fromDb():
     selected_item = tv1.selection()
     detaillst = tv1.item(selected_item)['values']
-    print(detaillst)
     for id, rw in enumerate(ws.values):
         print(rw)
         if detaillst[0]==rw[0]:
@@ -155,8 +154,8 @@ def generate_Budget():
         sub_lst = sublsts[idx]
         cost_sub_lst = total_item_costs_sublsts[idx]
         cv = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650, height=page_cap) #h 600
-        #cv.pack(side=TOP, fill=BOTH, expand=1)
-        cv.grid(column=0, row=idx)
+        cv.pack(side=TOP, fill=BOTH, expand=1)
+        #cv.grid(column=0, row=idx)
         for i in range(len(header_labels)):
             cv.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
         for i in range(len(heading_labels)):
@@ -170,12 +169,18 @@ def generate_Budget():
         for i in range(len(cost_sub_lst)):
             cv.create_text(590, 170+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
     canvas_lst = list(create_canvas(sublsts, second_frame))
-    print(canvas_lst)
+    #for idx, canvas in canvas_lst:
+        
+    #print(canvas_lst)
 def create_canvas(lst, frame):
-    for idx in range(len(lst)):
-        sub_lst = lst[idx]
-        canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=650, height=page_cap)
-        yield canvas
+    for idx in range(len(lst)+1):
+        #sub_lst = lst[idx]
+        #canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=650, height=page_cap)
+        #print(lst[idx]==len(lst))
+        #yield canvas
+        print(idx, len(lst))
+        if lst[idx] == len(lst):
+            print('last')
 def create_sublists(lst, size):
     for i in range(0, len(lst), size):
         yield lst[i:i+size]
