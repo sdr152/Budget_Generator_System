@@ -149,7 +149,7 @@ def generate_Budget():
     
     sublsts = list(create_sublists(detailed_lst, 20))
     total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
-    print(len(sublsts), len(total_item_costs_sublsts))
+    #print(len(sublsts), len(total_item_costs_sublsts))
     for idx in range(len(sublsts)):
         sub_lst = sublsts[idx]
         cost_sub_lst = total_item_costs_sublsts[idx]
@@ -169,18 +169,26 @@ def generate_Budget():
         for i in range(len(cost_sub_lst)):
             cv.create_text(590, 170+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
     canvas_lst = list(create_canvas(sublsts, second_frame))
-    #for idx, canvas in canvas_lst:
-        
-    #print(canvas_lst)
+    #canvas_lst = create_canvas(sublsts, second_frame)
+    print(canvas_lst)
+    
 def create_canvas(lst, frame):
-    for idx in range(len(lst)+1):
+    num_canvas = len(lst) if len(lst[-1])<=15 else len(lst)+1
+    print(num_canvas)
+    for idx in range(num_canvas):
+        print(idx, len(lst))
+        canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=650, height=page_cap)
+        yield canvas
+    #for idx in range(len(lst)+1):
         #sub_lst = lst[idx]
         #canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=650, height=page_cap)
         #print(lst[idx]==len(lst))
         #yield canvas
-        print(idx, len(lst))
-        if lst[idx] == len(lst):
-            print('last')
+        
+        #print(num_canvas)
+        #print(idx, len(lst))
+        #if idx == len(lst):
+        #    print('last', lst[-1])
 def create_sublists(lst, size):
     for i in range(0, len(lst), size):
         yield lst[i:i+size]
