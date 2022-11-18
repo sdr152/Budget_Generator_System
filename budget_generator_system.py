@@ -17,6 +17,7 @@ content = ttk.Frame(root, padding=(5,5,12,12), borderwidth=5)
 content.grid(column=0, row=0, sticky='nsew')
 
 # VARIABLES
+page_cap = 800
 today = dt.datetime.today().date()
 code = StringVar()
 mat = StringVar()
@@ -107,7 +108,8 @@ def generate_Budget():
     second_frame = Frame(canvas) # h 800
     
     # Add new frame to a window in the canvas
-    canvas.create_window((0,0), window=second_frame, anchor='nw', height=1500) #h 800
+    num_pages = len(detailed_lst)//20 + 1
+    canvas.create_window((0,0), window=second_frame, anchor='nw', height=page_cap*num_pages) #h 800
     
     canvas.create_image(540, 70, image=logo_gif)
     
@@ -146,14 +148,14 @@ def generate_Budget():
     factura_entry.place(x=115, y=80, width=300, height=20)
     factura_entry.bind('<Return>', on_enter3)
     
-    num_pages = len(detailed_lst)//15 + 1
+    
     sublsts = list(create_sublists(detailed_lst, 20))
     total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
     print(len(sublsts), len(total_item_costs_sublsts))
     for idx in range(len(sublsts)):
         sub_lst = sublsts[idx]
         cost_sub_lst = total_item_costs_sublsts[idx]
-        cv = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650, height=700) #h 600
+        cv = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650, height=page_cap) #h 600
         #cv.pack(side=TOP, fill=BOTH, expand=1)
         cv.grid(column=0, row=idx)
         for i in range(len(header_labels)):
