@@ -148,7 +148,6 @@ def generate_Budget():
     factura_entry.place(x=115, y=80, width=300, height=20)
     factura_entry.bind('<Return>', on_enter3)
     
-    
     sublsts = list(create_sublists(detailed_lst, 20))
     total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
     print(len(sublsts), len(total_item_costs_sublsts))
@@ -170,7 +169,13 @@ def generate_Budget():
             cv.create_text(530, 170+i*30, text=sub_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         for i in range(len(cost_sub_lst)):
             cv.create_text(590, 170+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
-
+    canvas_lst = list(create_canvas(sublsts, second_frame))
+    print(canvas_lst)
+def create_canvas(lst, frame):
+    for idx in range(len(lst)):
+        sub_lst = lst[idx]
+        canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=650, height=page_cap)
+        yield canvas
 def create_sublists(lst, size):
     for i in range(0, len(lst), size):
         yield lst[i:i+size]
