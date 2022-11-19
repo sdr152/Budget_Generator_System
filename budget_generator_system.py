@@ -61,6 +61,7 @@ def generate_Budget():
             cnv.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=490, height=800)
             process = subprocess.Popen(["ps2pdf", "tmp.ps", f"Budget_{i}.pdf"], shell=True)
             process.wait()
+            os.remove('tmp.ps')
         
     # COSTS CALCULATIONS
     iids_for_budget = tv2.get_children()
@@ -154,7 +155,6 @@ def generate_Budget():
     factura_entry.place(x=115, y=80, width=300, height=20)
     factura_entry.bind('<Return>', on_enter3)
     
-
     for idx in range(len(canvas_lst)):
         sub_lst = sublsts[idx]
         cost_sub_lst = total_item_costs_sublsts[idx]
