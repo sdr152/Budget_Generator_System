@@ -113,8 +113,8 @@ def generate_Budget():
     
     canvas.create_image(540, 70, image=logo_gif)
     
-    header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:']
-    heading_labels = [('Codigo',10), ('Material',100), ('Costo Unidad',420), ('Cantidad',510), ('Costo Total',580)]
+    header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:', 'No. Pagina:']
+    heading_labels = [('Codigo', 10), ('Material', 100), ('Costo Unidad', 420), ('Cantidad', 510), ('Costo Total', 580)]
     
     def on_enter1(event):
         vl = event.widget.get()
@@ -163,6 +163,9 @@ def generate_Budget():
         
         # Put the date on each canvas
         cv.create_text(150, 30, text=today, anchor='w', width=270, justify='left')
+
+        # Put the page number on each canvas
+        cv.create_text(150, 110, text=f'{idx+1} of {len(canvas_lst)}', anchor='w', width=270, justify='left')
         
         # Put the page header on each canvas
         for i in range(len(header_labels)):
