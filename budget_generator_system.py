@@ -55,13 +55,13 @@ def remove_fromBudget():
 def generate_Budget():
     def gen_pdf(*args):
         # Convert to PDF
-        cv.create_image(540, 70, image=logo_gif)
-        cv.update()
-        cv.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=490, height=800)
-        process = subprocess.Popen(["ps2pdf", "tmp.ps", "new_pdf.pdf"], shell=True)
-        process.wait()
-        os.remove("tmp.ps")
-    
+        for i, cnv in enumerate(canvas_lst):
+            cnv.create_image(540, 70, image=logo_gif)
+            cnv.update()
+            cnv.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=490, height=800)
+            process = subprocess.Popen(["ps2pdf", "tmp.ps", f"Budget_{i}.pdf"], shell=True)
+            process.wait()
+        
     # COSTS CALCULATIONS
     iids_for_budget = tv2.get_children()
     detailed_lst = []
@@ -117,49 +117,63 @@ def generate_Budget():
     
     def on_enter1(event):
         vl = event.widget.get()
-        canvas.create_text(150, 50, text=vl, anchor='w', width=270, justify='left')
+        for canvas in canvas_lst:
+            canvas.create_text(150, 50, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
     def on_enter2(event):
         vl = event.widget.get()
-        canvas.create_text(150, 70, text=vl, anchor='w', width=270, justify='left')
+        for canvas in canvas_lst:
+            canvas.create_text(150, 70, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
     def on_enter3(event):
         vl = event.widget.get()
-        canvas.create_text(150, 90, text=vl, anchor='w', width=270, justify='left')
+        for canvas in canvas_lst:
+            canvas.create_text(150, 90, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
-
+    
+    sublsts = list(create_sublists(detailed_lst, 20))
+    total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
+    canvas_lst = list(create_canvas(sublsts, second_frame))
+    
     # Fecha
     canvas.create_text(150, 30, text=today, anchor='w', width=270, justify='left')
     # Client name entry
     cl_name = StringVar()
-    client_name_entry = ttk.Entry(canvas, textvariable=cl_name)
+    client_name_entry = ttk.Entry(canvas_lst[0], textvariable=cl_name)
     client_name_entry.place(x=115, y=40, width=300, height=20)
     client_name_entry.bind("<Return>", on_enter1)
     
     # RTN entry
     rtn = StringVar()
-    rtn_entry = ttk.Entry(canvas, textvariable=rtn)
+    rtn_entry = ttk.Entry(canvas_lst[0], textvariable=rtn)
     rtn_entry.place(x=115, y=60, width=300, height=20)
     rtn_entry.bind('<Return>', on_enter2)
     # N. Factura entry
     factura = StringVar()
-    factura_entry = ttk.Entry(canvas, textvariable=factura)
+    factura_entry = ttk.Entry(canvas_lst[0], textvariable=factura)
     factura_entry.place(x=115, y=80, width=300, height=20)
     factura_entry.bind('<Return>', on_enter3)
     
-    sublsts = list(create_sublists(detailed_lst, 20))
-    total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
-    canvas_lst = list(create_canvas(sublsts, second_frame))
+
     for idx in range(len(canvas_lst)):
         sub_lst = sublsts[idx]
         cost_sub_lst = total_item_costs_sublsts[idx]
         cv = canvas_lst[idx]
         cv.pack(side=TOP, fill=BOTH, expand=1)
+        
+        # Put the date on each canvas
+        cv.create_text(150, 30, text=today, anchor='w', width=270, justify='left')
+        
+        # Put the page header on each canvas
         for i in range(len(header_labels)):
             cv.create_text(10, i*20+30, text=header_labels[i], anchor='w', width=300, justify='left')
+        
+        # Put the table header on each canvas
         for i in range(len(heading_labels)):
             cv.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
         cv.create_line(10, 160, 640, 160, capstyle='round')
+        
+        # Fill out the table for each canvas
         for i in range(len(sub_lst)):
             cv.create_text(10, 170+i*30, text=sub_lst[i][0], anchor='w', justify='left', width=70, fill='black')
             cv.create_text(60, 170+i*30, text=sub_lst[i][1], anchor='w', justify='left', width=370, fill='black')
