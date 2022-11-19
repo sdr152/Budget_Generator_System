@@ -104,7 +104,7 @@ def generate_Budget():
     canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
 
     # Add another frame inside canvas
-    second_frame = Frame(canvas) # h 800
+    second_frame = Frame(canvas, height=800) # h 800
     
     # Add new frame to a window in the canvas
     num_pages = len(detailed_lst)//20 + 1
@@ -149,15 +149,14 @@ def generate_Budget():
     
     sublsts = list(create_sublists(detailed_lst, 20))
     total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
-    print(len(sublsts), len(total_item_costs_sublsts))
-    for idx in range(len(sublsts)):
+    canvas_lst = list(create_canvas(sublsts, second_frame))
+    for idx in range(len(canvas_lst)):
         sub_lst = sublsts[idx]
         cost_sub_lst = total_item_costs_sublsts[idx]
-        cv = Canvas(second_frame, highlightbackground='red', bg='yellow', width=650, height=page_cap) #h 600
+        cv = canvas_lst[idx]
         cv.pack(side=TOP, fill=BOTH, expand=1)
-        #cv.grid(column=0, row=idx)
         for i in range(len(header_labels)):
-            cv.create_text(10, i*20+30,text=header_labels[i], anchor='w', width=300, justify='left')
+            cv.create_text(10, i*20+30, text=header_labels[i], anchor='w', width=300, justify='left')
         for i in range(len(heading_labels)):
             cv.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
         cv.create_line(10, 160, 640, 160, capstyle='round')
@@ -168,19 +167,19 @@ def generate_Budget():
             cv.create_text(530, 170+i*30, text=sub_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         for i in range(len(cost_sub_lst)):
             cv.create_text(590, 170+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
-    canvas_lst = list(create_canvas(sublsts, second_frame))
-    #for idx, canvas in canvas_lst:
-        
-    #print(canvas_lst)
+        print(idx, len(sublsts[-1]))
+        if idx == len(canvas_lst)-1:
+            if len(sublsts[-1]) <= 15:
+                print('Total Costs on same page')
+            else:
+                print("Total costs on new page")
+            print(idx, len(sublsts[-1]))
+            
 def create_canvas(lst, frame):
-    for idx in range(len(lst)+1):
-        #sub_lst = lst[idx]
-        #canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=650, height=page_cap)
-        #print(lst[idx]==len(lst))
-        #yield canvas
-        print(idx, len(lst))
-        if lst[idx] == len(lst):
-            print('last')
+    for idx in range(len(lst)):
+        canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=650, height=page_cap)
+        yield canvas
+    
 def create_sublists(lst, size):
     for i in range(0, len(lst), size):
         yield lst[i:i+size]
