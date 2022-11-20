@@ -80,6 +80,7 @@ def generate_Budget():
     total_flete = round(total_costo_materiales * 0.10, 2)
     total_imprevistos = round((total_costo_materiales + total_flete) * 0.05, 2)
     TOTAL_PROYECTO = total_costo_materiales + mano_de_obra + total_flete + total_imprevistos
+    resumen_costos = [total_costo_materiales, mano_de_obra, total_flete, total_imprevistos, TOTAL_PROYECTO]
     
     budget_wn = Toplevel(content, borderwidth=20, width=650)
     budget_wn.title('Presupuesto')
@@ -187,13 +188,17 @@ def generate_Budget():
             cv.create_text(530, 170+i*30, text=sub_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         for i in range(len(cost_sub_lst)):
             cv.create_text(590, 170+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
-        print(idx, len(sublsts[-1]))
         if idx == len(canvas_lst)-1:
             cv.create_text(10, 170+len(sub_lst)*30, text="Resumen de Costos: ", anchor='w', justify='left', width=150, fill='black')
             line = cv.create_line(10, 180+len(sub_lst)*30, 640, 180+len(sub_lst)*30, capstyle='butt')
             for i in range(len(costs_labels)):
-                cv.create_text(10, 200+len(sub_lst)*30 + i*25, text=costs_labels[i], anchor='w', justify='left', width=300, fill='black')
-            
+                cv.create_text(530, 200+len(sub_lst)*30+i*20, text=costs_labels[i], anchor='e', justify='right', width=300, fill='black')
+                cv.create_text(590, 200+len(sub_lst)*30+i*20, text=resumen_costos[i], anchor='w', justify='left', width=70, fill='red')
+                if i>2:
+                    cv.create_line(20, 300+len(sub_lst)*30+i*20, 150, 300+len(sub_lst)*30+i*20)
+                    cv.create_line(200, 300+len(sub_lst)*30+i*20, 330, 300+len(sub_lst)*30+i*20)
+                    cv.create_text(20, 310+len(sub_lst)*30+i*20, text="PeginService", anchor='w', justify='left', width=70, fill='red')
+                    cv.create_text(200, 310+len(sub_lst)*30+i*20, text="Cliente", anchor='w', justify='left', width=70, fill='red')
 def create_canvas(lst, frame):
     for idx in range(len(lst)):
         canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=650, height=page_cap)
