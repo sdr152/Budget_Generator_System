@@ -58,9 +58,9 @@ def generate_Budget():
         #os.makedirs(f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}')
         
         for i, cnv in enumerate(canvas_lst):
-            cnv.create_image(540, 70, image=logo_gif)
+            cnv.create_image(590, 70, image=logo_gif)
             cnv.update()
-            cnv.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=420, height=1000)
+            cnv.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=420, height=1000, width=700)
             process = subprocess.Popen(["ps2pdf", "tmp.ps", f"Budget_{i}.pdf"], shell=True)
             process.wait()
             os.remove('tmp.ps')
@@ -82,21 +82,21 @@ def generate_Budget():
     TOTAL_PROYECTO = round((total_costo_materiales + mano_de_obra + total_flete + total_imprevistos), 2)
     resumen_costos = [total_costo_materiales, mano_de_obra, total_flete, total_imprevistos, TOTAL_PROYECTO]
     
-    budget_wn = Toplevel(content, borderwidth=20, width=650)
+    budget_wn = Toplevel(content, borderwidth=20, width=700)
     budget_wn.title('Presupuesto')
     budget_wn.iconphoto('False', PhotoImage(file='peginservice.gif'))
 
-    logo_gif = PhotoImage(file='peginservice.gif', palette=4)
+    logo_gif = PhotoImage(file='peginservice.gif', palette=1)
 
     # Create a main frame
-    main_frame = Frame(budget_wn, width=650) #h 500
+    main_frame = Frame(budget_wn, width=700) #h 500
     main_frame.pack(fill=BOTH, expand=1)
     
     # Create a save pdf button
     save_pdf = ttk.Button(main_frame, text='Guardar como PDF', command=gen_pdf).pack(side=BOTTOM, fill=X)
     
     # Create a canvas
-    canvas = Canvas(main_frame, highlightbackground='black', bg='gray', width=650) 
+    canvas = Canvas(main_frame, highlightbackground='black', bg='gray', width=700) 
     canvas.pack(side=LEFT, fill=BOTH, expand=1)
     
     # Create a Scrollbar
@@ -114,26 +114,24 @@ def generate_Budget():
     num_pages = len(detailed_lst)//20 + 1
     canvas.create_window((0,0), window=second_frame, anchor='nw', height=page_cap*num_pages) #h 800
     
-    canvas.create_image(540, 70, image=logo_gif)
-    
     costs_labels = ['Costo total por materiales:', 'Total mano de obra:', 'Total Flete:','Costo por imprevistos:', 'COSTO TOTAL DEL PROYECTO:']
     header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:', 'No. Pagina:']
-    heading_labels = [('Codigo', 10), ('Material', 100), ('Costo Unidad Lps.', 400), ('Cantidad', 510), ('Costo Total, ISV incluido', 560)]
+    heading_labels = [('Codigo', 10), ('Material', 100), ('Costo Unidad Lps.', 430), ('Cantidad', 540), ('Costo Total Lps., ISV incluido', 600)]
     
     def on_enter1(event):
         vl = event.widget.get()
         for canvas in canvas_lst:
-            canvas.create_text(150, 50, text=vl, anchor='w', width=270, justify='left')
+            canvas.create_text(130, 50, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
     def on_enter2(event):
         vl = event.widget.get()
         for canvas in canvas_lst:
-            canvas.create_text(150, 70, text=vl, anchor='w', width=270, justify='left')
+            canvas.create_text(130, 70, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
     def on_enter3(event):
         vl = event.widget.get()
         for canvas in canvas_lst:
-            canvas.create_text(150, 90, text=vl, anchor='w', width=270, justify='left')
+            canvas.create_text(130, 90, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
     
     sublsts = list(create_sublists(detailed_lst, 20))
@@ -145,18 +143,18 @@ def generate_Budget():
     # Client name entry
     cl_name = StringVar()
     client_name_entry = ttk.Entry(canvas_lst[0], textvariable=cl_name)
-    client_name_entry.place(x=115, y=40, width=300, height=20)
+    client_name_entry.place(x=115, y=40, width=250, height=20)
     client_name_entry.bind("<Return>", on_enter1)
     
     # RTN entry
     rtn = StringVar()
     rtn_entry = ttk.Entry(canvas_lst[0], textvariable=rtn)
-    rtn_entry.place(x=115, y=60, width=300, height=20)
+    rtn_entry.place(x=115, y=60, width=250, height=20)
     rtn_entry.bind('<Return>', on_enter2)
     # N. Factura entry
     factura = StringVar()
     factura_entry = ttk.Entry(canvas_lst[0], textvariable=factura)
-    factura_entry.place(x=115, y=80, width=300, height=20)
+    factura_entry.place(x=115, y=80, width=250, height=20)
     factura_entry.bind('<Return>', on_enter3)
     
     for idx in range(len(canvas_lst)):
@@ -166,10 +164,10 @@ def generate_Budget():
         cv.pack(side=TOP, fill=BOTH, expand=1)
         
         # Put the date on each canvas
-        cv.create_text(150, 30, text=today, anchor='w', width=270, justify='left')
+        cv.create_text(130, 30, text=today, anchor='w', width=270, justify='left')
 
         # Put the page number on each canvas
-        cv.create_text(150, 110, text=f'{idx+1} of {len(canvas_lst)}', anchor='w', width=270, justify='left')
+        cv.create_text(130, 110, text=f'{idx+1} of {len(canvas_lst)}', anchor='w', width=270, justify='left')
         
         # Put the page header on each canvas
         for i in range(len(header_labels)):
@@ -184,10 +182,10 @@ def generate_Budget():
         for i in range(len(sub_lst)):
             cv.create_text(10, 170+i*30, text=sub_lst[i][0], anchor='w', justify='left', width=70, fill='black')
             cv.create_text(60, 170+i*30, text=sub_lst[i][1], anchor='w', justify='left', width=370, fill='black')
-            cv.create_text(450, 170+i*30, text=sub_lst[i][2], anchor='w', justify='left', width=70, fill='black')
-            cv.create_text(530, 170+i*30, text=sub_lst[i][3], anchor='w', justify='left', width=70, fill='black')
+            cv.create_text(460, 170+i*30, text=sub_lst[i][2], anchor='w', justify='left', width=70, fill='black')
+            cv.create_text(560, 170+i*30, text=sub_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         for i in range(len(cost_sub_lst)):
-            cv.create_text(590, 170+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
+            cv.create_text(630, 170+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
         if idx == len(canvas_lst)-1:
             cv.create_text(10, 170+len(sub_lst)*30, text="Resumen de Costos: ", anchor='w', justify='left', width=150, fill='black')
             line = cv.create_line(10, 180+len(sub_lst)*30, 640, 180+len(sub_lst)*30, capstyle='butt')
@@ -201,7 +199,7 @@ def generate_Budget():
                     cv.create_text(200, 310+len(sub_lst)*30+i*20, text="Cliente", anchor='w', justify='left', width=70, fill='red')
 def create_canvas(lst, frame):
     for idx in range(len(lst)):
-        canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=650, height=page_cap)
+        canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=700, height=page_cap)
         yield canvas
     
 def create_sublists(lst, size):
