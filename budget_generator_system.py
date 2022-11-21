@@ -79,7 +79,7 @@ def generate_Budget():
     mano_de_obra = round(total_costo_materiales * 0.35, 2)
     total_flete = round(total_costo_materiales * 0.10, 2)
     total_imprevistos = round((total_costo_materiales + total_flete) * 0.05, 2)
-    TOTAL_PROYECTO = total_costo_materiales + mano_de_obra + total_flete + total_imprevistos
+    TOTAL_PROYECTO = round((total_costo_materiales + mano_de_obra + total_flete + total_imprevistos), 2)
     resumen_costos = [total_costo_materiales, mano_de_obra, total_flete, total_imprevistos, TOTAL_PROYECTO]
     
     budget_wn = Toplevel(content, borderwidth=20, width=650)
@@ -118,7 +118,7 @@ def generate_Budget():
     
     costs_labels = ['Costo total por materiales:', 'Total mano de obra:', 'Total Flete:','Costo por imprevistos:', 'COSTO TOTAL DEL PROYECTO:']
     header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:', 'No. Pagina:']
-    heading_labels = [('Codigo', 10), ('Material', 100), ('Costo Unidad', 420), ('Cantidad', 510), ('Costo Total', 580)]
+    heading_labels = [('Codigo', 10), ('Material', 100), ('Costo Unidad Lps.', 400), ('Cantidad', 510), ('Costo Total, ISV incluido', 560)]
     
     def on_enter1(event):
         vl = event.widget.get()
@@ -177,7 +177,7 @@ def generate_Budget():
         
         # Put the table header on each canvas
         for i in range(len(heading_labels)):
-            cv.create_text(heading_labels[i][1], 150, text=heading_labels[i][0], anchor='w', width=100, justify='center')
+            cv.create_text(heading_labels[i][1], 145, text=heading_labels[i][0], anchor='w', width=100, justify='center')
         cv.create_line(10, 160, 640, 160, capstyle='round')
         
         # Fill out the table for each canvas
