@@ -116,7 +116,7 @@ def generate_Budget():
     
     canvas.create_image(540, 70, image=logo_gif)
     
-    costs_labels = ['Costo total por materiales:', 'Total mano de obra:', 'Costo por imprevistos:', 'COSTO TOTAL DEL PROYECTO:']
+    costs_labels = ['Costo total por materiales:', 'Total mano de obra:', 'Total Flete:','Costo por imprevistos:', 'COSTO TOTAL DEL PROYECTO:']
     header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:', 'No. Pagina:']
     heading_labels = [('Codigo', 10), ('Material', 100), ('Costo Unidad', 420), ('Cantidad', 510), ('Costo Total', 580)]
     
@@ -193,8 +193,8 @@ def generate_Budget():
             line = cv.create_line(10, 180+len(sub_lst)*30, 640, 180+len(sub_lst)*30, capstyle='butt')
             for i in range(len(costs_labels)):
                 cv.create_text(530, 200+len(sub_lst)*30+i*20, text=costs_labels[i], anchor='e', justify='right', width=300, fill='black')
-                cv.create_text(590, 200+len(sub_lst)*30+i*20, text=resumen_costos[i], anchor='w', justify='left', width=70, fill='red')
-                if i>2:
+                cv.create_text(570, 200+len(sub_lst)*30+i*20, text=f'Lps. {resumen_costos[i]}', anchor='w', justify='left', width=70, fill='red')
+                if i>3:
                     cv.create_line(20, 300+len(sub_lst)*30+i*20, 150, 300+len(sub_lst)*30+i*20)
                     cv.create_line(200, 300+len(sub_lst)*30+i*20, 330, 300+len(sub_lst)*30+i*20)
                     cv.create_text(20, 310+len(sub_lst)*30+i*20, text="PeginService", anchor='w', justify='left', width=70, fill='red')
@@ -228,16 +228,9 @@ def update_num_units(event):
         units_entry.select_range(0, END)
         units_entry.focus()
         units_entry.bind("<FocusOut>", on_focus_out)
-        units_entry.bind("<Return>", on_return)       
+        units_entry.bind("<Return>", on_return)  
+        units_entry.bind("<Double-Button-3>", on_return)     
 def on_focus_out(event):
-    vl = event.widget.get()
-    selected_id = tv2.selection()
-    selected_id_index = tv2.index(selected_id)
-    selected_row = tv2.item(selected_id)
-    detaillst = selected_row['values']
-    detaillst[3] = vl
-    tv2.delete(selected_id)
-    tv2.insert('', index=selected_id_index, iid=selected_id, values=detaillst)
     event.widget.destroy()
 def on_return(event):
     vl = event.widget.get()
@@ -249,7 +242,19 @@ def on_return(event):
     tv2.delete(selected_id)
     tv2.insert('', index=selected_id_index, iid=selected_id, values=detaillst)
     event.widget.destroy()
+def treeview_sort_column(tv, col, reverse):
+    print('step1')
+    l = [(tv.set(k, col), k) for k in tv.get_children('')]
+    print(l)
+    l.sort(reverse=reverse)
     
+    # rearrange items in sorted positions
+    for index, (val, k) in enumerate(l):
+        tv.move(k, '', index)
+
+    # reverse sort next time
+    tv.heading(col, command=lambda: treeview_sort_column(tv, col, not reverse))
+
 # CREATE WIDGETS
 # FIRST WINDOW WIDGETS
 logo_gif = PhotoImage(file='peginservice.gif')
@@ -269,12 +274,14 @@ AddtoBudget = ttk.Button(content, text='Agregar a Presupuesto', command=add_toBu
 RemovefromBudget = ttk.Button(content, text='Eliminar de Presupuesto', command=remove_fromBudget, width=25)
 Generate = ttk.Button(content, text='Generar', command=generate_Budget, width=25)
 
+cols1 = ['Código', 'Material', 'Costo unidad'] 
 cols = ['Código', 'Material', 'Costo unidad', 'Unidades']
-tv1 = ttk.Treeview(content, columns=cols[:3], show='headings', height=15)
-tv1.column(cols[0], width=15)
-tv1.column(cols[2], width=30)
-for col in tv1['column']:
-    tv1.heading(col, text=col)
+
+tv1 = ttk.Treeview(content, columns=cols1, show='headings', height=15)
+tv1.column(cols1[0], width=15)
+tv1.column(cols1[2], width=30)
+for col in cols1:
+    tv1.heading(col, text=col, command=lambda: treeview_sort_column(tv1, 'Material', False))
 sb1 = ttk.Scrollbar(content, orient=VERTICAL, command=tv1.yview)
 tv1.config(yscrollcommand=sb1.set)
 
@@ -283,8 +290,8 @@ tv2.column(cols[0], width=70)
 tv2.column(cols[1], width=150)
 tv2.column(cols[2], width=90)
 tv2.column(cols[3], width=80)
-for col in tv2['column']:
-    tv2.heading(col, text=col)
+for col2 in tv2['column']:
+    tv2.heading(col2, text=col2)
 sb2 = ttk.Scrollbar(content, orient=VERTICAL, command=tv2.yview)
 tv2.config(yscrollcomman=sb2.set)
 # SECOND WINDOW WIDGETS
