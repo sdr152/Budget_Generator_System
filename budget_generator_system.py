@@ -7,6 +7,7 @@ import os
 import datetime as dt
 import subprocess
 import time
+import shutil
 
 root = Tk()
 root.title("LISTA DE MATERIALES PARA ELECTRIFICAR")
@@ -34,9 +35,7 @@ def remove_fromDb():
     selected_item = tv1.selection()
     detaillst = tv1.item(selected_item)['values']
     for id, rw in enumerate(ws.values):
-        print(rw)
         if detaillst[0]==rw[0]:
-            print('SAME :)')
             ws.delete_rows(id+1)
             break
     wb.save('database.xlsx')
@@ -52,10 +51,23 @@ def add_toBudget():
 def remove_fromBudget():
     selected_item = tv2.selection()
     tv2.delete(selected_item)
+def update_tv1_entry(event):
+    selected_item = event.widget.selection()
+    #selected_item = tv1.selection()
+    if selected_item:
+        #detaillst = tv1.item(selected_item)['values']
+        detaillst = event.widget.item(selected_item)['values']
+        code.set(detaillst[0])
+        mat.set(detaillst[1])
+        price.set(detaillst[2])
 def generate_Budget():
     def gen_pdf(*args):
         # Convert to PDF
-        #os.makedirs(f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}')
+        current_dir = os.getcwd()
+        #current_dir = current_dir.replace("\\" , '/')
+        print(current_dir)
+        os.makedirs(f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}', exist_ok=True)
+        #os.chdir(f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}')
         
         for i, cnv in enumerate(canvas_lst):
             cnv.create_image(590, 70, image=logo_gif)
@@ -64,7 +76,10 @@ def generate_Budget():
             process = subprocess.Popen(["ps2pdf", "tmp.ps", f"Budget_{i}.pdf"], shell=True)
             process.wait()
             os.remove('tmp.ps')
-        
+            current_dir = current_dir.replace('\\', '/')
+            #os.rename(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
+            os.replace(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
+            #shutil.move(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
     # COSTS CALCULATIONS
     iids_for_budget = tv2.get_children()
     detailed_lst = []
@@ -175,28 +190,28 @@ def generate_Budget():
         
         # Put the table header on each canvas
         for i in range(len(heading_labels)):
-            cv.create_text(heading_labels[i][1], 145, text=heading_labels[i][0], anchor='w', width=100, justify='center')
-        cv.create_line(10, 160, 640, 160, capstyle='round')
+            cv.create_text(heading_labels[i][1], 155, text=heading_labels[i][0], anchor='w', width=100, justify='center')
+        cv.create_line(10, 170, 690, 170, capstyle='round')
         
         # Fill out the table for each canvas
         for i in range(len(sub_lst)):
-            cv.create_text(10, 170+i*30, text=sub_lst[i][0], anchor='w', justify='left', width=70, fill='black')
-            cv.create_text(60, 170+i*30, text=sub_lst[i][1], anchor='w', justify='left', width=370, fill='black')
-            cv.create_text(460, 170+i*30, text=sub_lst[i][2], anchor='w', justify='left', width=70, fill='black')
-            cv.create_text(560, 170+i*30, text=sub_lst[i][3], anchor='w', justify='left', width=70, fill='black')
+            cv.create_text(10, 180+i*30, text=sub_lst[i][0], anchor='w', justify='left', width=70, fill='black')
+            cv.create_text(60, 180+i*30, text=sub_lst[i][1], anchor='w', justify='left', width=370, fill='black')
+            cv.create_text(460, 180+i*30, text=sub_lst[i][2], anchor='w', justify='left', width=70, fill='black')
+            cv.create_text(560, 180+i*30, text=sub_lst[i][3], anchor='w', justify='left', width=70, fill='black')
         for i in range(len(cost_sub_lst)):
-            cv.create_text(630, 170+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
+            cv.create_text(630, 180+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
         if idx == len(canvas_lst)-1:
-            cv.create_text(10, 170+len(sub_lst)*30, text="Resumen de Costos: ", anchor='w', justify='left', width=150, fill='black')
-            line = cv.create_line(10, 180+len(sub_lst)*30, 640, 180+len(sub_lst)*30, capstyle='butt')
+            cv.create_text(10, 180+len(sub_lst)*30, text="Resumen de Costos: ", anchor='w', justify='left', width=150, fill='black')
+            line = cv.create_line(10, 190+len(sub_lst)*30, 690, 190+len(sub_lst)*30, capstyle='butt')
             for i in range(len(costs_labels)):
-                cv.create_text(530, 200+len(sub_lst)*30+i*20, text=costs_labels[i], anchor='e', justify='right', width=300, fill='black')
-                cv.create_text(570, 200+len(sub_lst)*30+i*20, text=f'Lps. {resumen_costos[i]}', anchor='w', justify='left', width=70, fill='red')
+                cv.create_text(530, 210+len(sub_lst)*30+i*20, text=costs_labels[i], anchor='e', justify='right', width=300, fill='black')
+                cv.create_text(570, 210+len(sub_lst)*30+i*20, text=f'Lps. {resumen_costos[i]}', anchor='w', justify='left', width=70, fill='red')
                 if i>3:
-                    cv.create_line(20, 300+len(sub_lst)*30+i*20, 150, 300+len(sub_lst)*30+i*20)
-                    cv.create_line(200, 300+len(sub_lst)*30+i*20, 330, 300+len(sub_lst)*30+i*20)
-                    cv.create_text(20, 310+len(sub_lst)*30+i*20, text="PeginService", anchor='w', justify='left', width=70, fill='red')
-                    cv.create_text(200, 310+len(sub_lst)*30+i*20, text="Cliente", anchor='w', justify='left', width=70, fill='red')
+                    cv.create_line(20, 310+len(sub_lst)*30+i*20, 150, 310+len(sub_lst)*30+i*20)
+                    cv.create_line(200, 310+len(sub_lst)*30+i*20, 330, 310+len(sub_lst)*30+i*20)
+                    cv.create_text(20, 320+len(sub_lst)*30+i*20, text="PeginService", anchor='w', justify='left', width=70, fill='red')
+                    cv.create_text(200, 320+len(sub_lst)*30+i*20, text="Cliente", anchor='w', justify='left', width=70, fill='red')
 def create_canvas(lst, frame):
     for idx in range(len(lst)):
         canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=700, height=page_cap)
@@ -241,9 +256,7 @@ def on_return(event):
     tv2.insert('', index=selected_id_index, iid=selected_id, values=detaillst)
     event.widget.destroy()
 def treeview_sort_column(tv, col, reverse):
-    print('step1')
     l = [(tv.set(k, col), k) for k in tv.get_children('')]
-    print(l)
     l.sort(reverse=reverse)
     
     # rearrange items in sorted positions
@@ -275,13 +288,14 @@ Generate = ttk.Button(content, text='Generar', command=generate_Budget, width=25
 cols1 = ['Código', 'Material', 'Costo unidad'] 
 cols = ['Código', 'Material', 'Costo unidad', 'Unidades']
 
-tv1 = ttk.Treeview(content, columns=cols1, show='headings', height=15)
-tv1.column(cols1[0], width=15)
-tv1.column(cols1[2], width=30)
-for col in cols1:
+tv1 = ttk.Treeview(content, columns=cols[:3], show='headings', height=15)
+tv1.column(cols[0], width=15)
+tv1.column(cols[2], width=30)
+for col in cols[:3]:
     tv1.heading(col, text=col, command=lambda: treeview_sort_column(tv1, 'Material', False))
 sb1 = ttk.Scrollbar(content, orient=VERTICAL, command=tv1.yview)
 tv1.config(yscrollcommand=sb1.set)
+tv1.bind("<Double-1>", update_tv1_entry)
 
 tv2 = ttk.Treeview(content, columns=cols, show='headings', height=15)
 tv2.column(cols[0], width=70)
@@ -289,9 +303,9 @@ tv2.column(cols[1], width=150)
 tv2.column(cols[2], width=90)
 tv2.column(cols[3], width=80)
 for col2 in tv2['column']:
-    tv2.heading(col2, text=col2)
+    tv2.heading(col2, text=col2, command=lambda: treeview_sort_column(tv2, 'Material', False))
 sb2 = ttk.Scrollbar(content, orient=VERTICAL, command=tv2.yview)
-tv2.config(yscrollcomman=sb2.set)
+tv2.config(yscrollcommand=sb2.set)
 # SECOND WINDOW WIDGETS
 
 # GRID WIDGETS
