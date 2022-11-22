@@ -8,6 +8,7 @@ import datetime as dt
 import subprocess
 import time
 import shutil
+from PIL import Image
 
 root = Tk()
 root.title("LISTA DE MATERIALES PARA ELECTRIFICAR")
@@ -70,7 +71,7 @@ def generate_Budget():
         #os.chdir(f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}')
         
         for i, cnv in enumerate(canvas_lst):
-            cnv.create_image(590, 70, image=logo_gif)
+            cnv.create_image(630, 40, image=logo_gif)
             cnv.update()
             cnv.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=420, height=1000, width=700)
             process = subprocess.Popen(["ps2pdf", "tmp.ps", f"Budget_{i}.pdf"], shell=True)
@@ -188,6 +189,10 @@ def generate_Budget():
         for i in range(len(header_labels)):
             cv.create_text(10, i*20+30, text=header_labels[i], anchor='w', width=300, justify='left')
         
+        # Put company information on canvas
+        cv.create_text(690, 85, text='Cel: +504 9799-2662', anchor='e', justify='right')
+        cv.create_text(690, 100, text='Email: ventas@peginservice.com', anchor='e', justify='right')
+        cv.create_text(690, 115, text='Col. Miraflores, Calle Guanaja # 1884, Tegucigalpa, Honduras', anchor='e', justify='right')
         # Put the table header on each canvas
         for i in range(len(heading_labels)):
             cv.create_text(heading_labels[i][1], 155, text=heading_labels[i][0], anchor='w', width=100, justify='center')
@@ -325,7 +330,7 @@ tv1.grid(column=0, row=5, columnspan=3, padx=5, pady=5, sticky="nsew")
 tv2.grid(column=4, row=5, columnspan=3, padx=5, pady=5, sticky='nsew')
 sb1.grid(column=3, row=5, padx=5, pady=5, sticky="ns")
 sb2.grid(column=7, row=5, padx=5, pady=5, sticky='ns')
-logo_lb.grid(column=5, row=1, rowspan=3, padx=5, pady=5, sticky='we')
+logo_lb.grid(column=5, row=1, rowspan=3, padx=5, pady=5, sticky='e')
 
 root.grid_columnconfigure(0, weight=1)
 root.grid_rowconfigure(0, weight=1)
