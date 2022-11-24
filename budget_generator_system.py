@@ -2,13 +2,14 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 from openpyxl import Workbook
+from PyPDF2 import PdfFileMerger
 import openpyxl
 import os
 import datetime as dt
 import subprocess
 import time
-import shutil
-from PIL import Image
+
+
 
 root = Tk()
 root.title("LISTA DE MATERIALES PARA ELECTRIFICAR")
@@ -81,6 +82,21 @@ def generate_Budget():
             #os.rename(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
             os.replace(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
             #shutil.move(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
+
+        #dir_files_lst = os.listdir(f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}')
+        #print(dir_files_lst)
+        merger = PdfFileMerger()
+        path_to_files = f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/'
+        # Get the file names in the directory
+        for root, dirs, file_names in os.walk(path_to_files):
+            # Iterate over the list of the file names
+            for file_name in file_names:
+                # Append pdf files
+                merger.append(path_to_files + file_name)
+            
+        merger.write(f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/{cl_name.get()}_Presupuesto.pdf')
+        merger.close()
+        
     # COSTS CALCULATIONS
     iids_for_budget = tv2.get_children()
     detailed_lst = []
@@ -131,46 +147,44 @@ def generate_Budget():
     canvas.create_window((0,0), window=second_frame, anchor='nw', height=page_cap*num_pages) #h 800
     
     costs_labels = ['Costo total por materiales:', 'Total mano de obra:', 'Total Flete:','Costo por imprevistos:', 'COSTO TOTAL DEL PROYECTO:']
-    header_labels = ['Fecha:', 'Nombre de cliente:', 'R.T.N.:', 'No. Factura:', 'No. Pagina:']
+    header_labels = ['Fecha:', 'Cliente:', 'R.T.N.:', 'No. Factura:', 'No. Pagina:']
     heading_labels = [('Codigo', 10), ('Material', 100), ('Costo Unidad Lps.', 430), ('Cantidad', 540), ('Costo Total Lps., ISV incluido', 600)]
     
     def on_enter1(event):
         vl = event.widget.get()
         for canvas in canvas_lst:
-            canvas.create_text(130, 50, text=vl, anchor='w', width=270, justify='left')
+            canvas.create_text(90, 50, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
     def on_enter2(event):
         vl = event.widget.get()
         for canvas in canvas_lst:
-            canvas.create_text(130, 70, text=vl, anchor='w', width=270, justify='left')
+            canvas.create_text(90, 70, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
     def on_enter3(event):
         vl = event.widget.get()
         for canvas in canvas_lst:
-            canvas.create_text(130, 90, text=vl, anchor='w', width=270, justify='left')
+            canvas.create_text(90, 90, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
     
     sublsts = list(create_sublists(detailed_lst, 20))
     total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
     canvas_lst = list(create_canvas(sublsts, second_frame))
     
-    # Fecha
-    canvas.create_text(150, 30, text=today, anchor='w', width=270, justify='left')
     # Client name entry
     cl_name = StringVar()
     client_name_entry = ttk.Entry(canvas_lst[0], textvariable=cl_name)
-    client_name_entry.place(x=115, y=40, width=250, height=20)
+    client_name_entry.place(x=85, y=40, width=250, height=20)
     client_name_entry.bind("<Return>", on_enter1)
     
     # RTN entry
     rtn = StringVar()
     rtn_entry = ttk.Entry(canvas_lst[0], textvariable=rtn)
-    rtn_entry.place(x=115, y=60, width=250, height=20)
+    rtn_entry.place(x=85, y=60, width=250, height=20)
     rtn_entry.bind('<Return>', on_enter2)
     # N. Factura entry
     factura = StringVar()
     factura_entry = ttk.Entry(canvas_lst[0], textvariable=factura)
-    factura_entry.place(x=115, y=80, width=250, height=20)
+    factura_entry.place(x=85, y=80, width=250, height=20)
     factura_entry.bind('<Return>', on_enter3)
     
     for idx in range(len(canvas_lst)):
@@ -180,10 +194,10 @@ def generate_Budget():
         cv.pack(side=TOP, fill=BOTH, expand=1)
         
         # Put the date on each canvas
-        cv.create_text(130, 30, text=today, anchor='w', width=270, justify='left')
+        cv.create_text(90, 30, text=today, anchor='w', width=270, justify='left')
 
         # Put the page number on each canvas
-        cv.create_text(130, 110, text=f'{idx+1} of {len(canvas_lst)}', anchor='w', width=270, justify='left')
+        cv.create_text(90, 110, text=f'{idx+1} of {len(canvas_lst)}', anchor='w', width=270, justify='left')
         
         # Put the page header on each canvas
         for i in range(len(header_labels)):
