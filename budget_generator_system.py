@@ -9,8 +9,6 @@ import datetime as dt
 import subprocess
 import time
 
-
-
 root = Tk()
 root.title("LISTA DE MATERIALES PARA ELECTRIFICAR")
 root.geometry('1000x600')
@@ -63,8 +61,10 @@ def update_tv1_entry(event):
         price.set(detaillst[2])
 def generate_Budget():
     def gen_pdf(*args):
-        
         # Convert to PDF
+        if cl_name.get() == '':
+            print("Client must have a name!")
+            return
         current_dir = os.getcwd()
         current_dir = current_dir.replace("\\" , '/')
         print('STEP 1: ', current_dir)
@@ -105,8 +105,11 @@ def generate_Budget():
                 if file_name.startswith("pagina"):
                     os.remove(path_to_files + file_name)
         print("FINISH CLEANING")
-        
+
     # COSTS CALCULATIONS
+    if not tv2.get_children():
+        print("Budget is empty!")
+        return
     iids_for_budget = tv2.get_children()
     detailed_lst = []
     total_item_costs_lst = []
