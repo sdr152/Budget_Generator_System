@@ -20,6 +20,9 @@ content.grid(column=0, row=0, sticky='nsew')
 # VARIABLES
 page_cap = 1000
 today = dt.datetime.today().date()
+hr = dt.datetime.today().hour
+mn = dt.datetime.today().minute
+sc = dt.datetime.today().second
 code = StringVar()
 mat = StringVar()
 price = StringVar()
@@ -172,11 +175,6 @@ def generate_Budget():
         for canvas in canvas_lst:
             canvas.create_text(90, 70, text=vl, anchor='w', width=270, justify='left')
         event.widget.destroy()
-    def on_enter3(event):
-        vl = event.widget.get()
-        for canvas in canvas_lst:
-            canvas.create_text(90, 90, text=vl, anchor='w', width=270, justify='left')
-        event.widget.destroy()
     
     sublsts = list(create_sublists(detailed_lst, 20))
     total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
@@ -193,11 +191,6 @@ def generate_Budget():
     rtn_entry = ttk.Entry(canvas_lst[0], textvariable=rtn)
     rtn_entry.place(x=85, y=60, width=250, height=20)
     rtn_entry.bind('<Return>', on_enter2)
-    # N. Factura entry
-    factura = StringVar()
-    factura_entry = ttk.Entry(canvas_lst[0], textvariable=factura)
-    factura_entry.place(x=85, y=80, width=250, height=20)
-    factura_entry.bind('<Return>', on_enter3)
     
     for idx in range(len(canvas_lst)):
         sub_lst = sublsts[idx]
@@ -207,6 +200,9 @@ def generate_Budget():
         
         # Put the date on each canvas
         cv.create_text(90, 30, text=today, anchor='w', width=270, justify='left')
+
+        # Put the receipt number on each canvas
+        cv.create_text(90, 90, text=f'PEG{today}-{hr}{mn}{sc}', anchor='w', width=270, justify='left')
 
         # Put the page number on each canvas
         cv.create_text(90, 110, text=f'{idx+1} of {len(canvas_lst)}', anchor='w', width=270, justify='left')
