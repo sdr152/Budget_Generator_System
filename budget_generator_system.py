@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
+from tkinter.font import Font
 from openpyxl import Workbook
 from PyPDF2 import PdfFileMerger
 import openpyxl
@@ -20,13 +21,26 @@ content.grid(column=0, row=0, sticky='nsew')
 # VARIABLES
 page_cap = 1000
 today = dt.datetime.today().date()
-hr = dt.datetime.today().hour
-mn = dt.datetime.today().minute
-sc = dt.datetime.today().second
 code = StringVar()
 mat = StringVar()
 price = StringVar()
 original_path = os.getcwd()
+my_font = Font(
+    family = 'Times',
+    size = 9,
+    weight = 'bold',
+    slant = 'roman',
+    underline = 0,
+    overstrike = 0
+)
+my_font2 = Font(
+    family = 'Times',
+    size = 9,
+    weight = 'normal',
+    slant = 'roman',
+    underline = 0,
+    overstrike = 0
+)
 
 # FUNCTIONS
 def add_toDb():
@@ -73,8 +87,9 @@ def generate_Budget():
         print('STEP 1: ', current_dir)
         path_to_Documents = os.path.expanduser('~\Documents')
         path_to_Documents = path_to_Documents.replace('\\', '/')
+        #prog_files_dir = 'C:/Program Files'
         print('STEP 2: ', path_to_Documents)
-        os.makedirs(f'{path_to_Documents}/{cl_name.get()}', exist_ok=True)
+        os.makedirs(f'{path_to_Documents}/Cotizacion_{cl_name.get()}', exist_ok=True)
         for i, cnv in enumerate(canvas_lst):
             cnv.create_image(630, 40, image=logo_gif)
             cnv.update()
@@ -83,23 +98,23 @@ def generate_Budget():
             process.wait()
             os.remove('tmp.ps')
             #os.rename(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
-            os.replace(f'{current_dir}/pagina_{i}.pdf', f'{path_to_Documents}/{cl_name.get()}/pagina_{i}.pdf')
+            os.replace(f'{current_dir}/pagina_{i}.pdf', f'{path_to_Documents}/Cotizacion_{cl_name.get()}/pagina_{i}.pdf')
             #shutil.move(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
 
         merger = PdfFileMerger()
-        path_to_files = f'{path_to_Documents}/{cl_name.get()}/'
+        path_to_files = f'{path_to_Documents}/Cotizacion_{cl_name.get()}/'
     
         print('STEP 3: ', path_to_files)
         # Get the file names in the directory
-        if os.path.exists(f'{path_to_Documents}/{cl_name.get()}/{cl_name.get()}_Presupuesto.pdf'):
-            os.remove(f'{path_to_Documents}/{cl_name.get()}/{cl_name.get()}_Presupuesto.pdf')
+        if os.path.exists(f'{path_to_Documents}/Cotizacion_{cl_name.get()}/{cl_name.get()}_Cotizacion.pdf'):
+            os.remove(f'{path_to_Documents}/Cotizacion_{cl_name.get()}/{cl_name.get()}_Cotizacion.pdf')
             print("File removed!")
         for root, dirs, file_names in os.walk(path_to_files):
             for file_name in file_names:
                 merger.append(path_to_files + file_name)
         print("FINISH MERGING")    
         
-        merger.write(f'{path_to_Documents}/{cl_name.get()}/{cl_name.get()}_Presupuesto.pdf')
+        merger.write(f'{path_to_Documents}/Cotizacion_{cl_name.get()}/{cl_name.get()}_Cotizacion.pdf')
         merger.close()
     
         # Clean directory
@@ -108,6 +123,10 @@ def generate_Budget():
                 if file_name.startswith("pagina"):
                     os.remove(path_to_files + file_name)
         print("FINISH CLEANING")
+
+    hr = dt.datetime.today().hour
+    mn = dt.datetime.today().minute
+    sc = dt.datetime.today().second
 
     # COSTS CALCULATIONS
     if not tv2.get_children():
@@ -123,14 +142,13 @@ def generate_Budget():
         total_cost_per_item = round(1.15*float(values_lst[2])*float(values_lst[3]), 2)
         total_item_costs_lst.append(total_cost_per_item)
     total_costo_materiales = round(sum(total_item_costs_lst), 2)
-    mano_de_obra = round(total_costo_materiales * 0.35, 2)
-    total_flete = round(total_costo_materiales * 0.10, 2)
-    total_imprevistos = round((total_costo_materiales + total_flete) * 0.05, 2)
-    TOTAL_PROYECTO = round((total_costo_materiales + mano_de_obra + total_flete + total_imprevistos), 2)
-    resumen_costos = [total_costo_materiales, mano_de_obra, total_flete, total_imprevistos, TOTAL_PROYECTO]
+    #mano_de_obra = round(total_costo_materiales * 0.35, 2)
+    #total_flete = round(total_costo_materiales * 0.10, 2)
+    #total_imprevistos = round((total_costo_materiales + total_flete) * 0.05, 2)
+    resumen_costos = [total_costo_materiales]
     
     budget_wn = Toplevel(content, borderwidth=20, width=700)
-    budget_wn.title('Presupuesto')
+    budget_wn.title('Cotizacion')
     budget_wn.iconphoto('False', PhotoImage(file='peginservice.gif'))
 
     logo_gif = PhotoImage(file='peginservice.gif', palette=1)
@@ -161,19 +179,19 @@ def generate_Budget():
     num_pages = len(detailed_lst)//20 + 1
     canvas.create_window((0,0), window=second_frame, anchor='nw', height=page_cap*num_pages) #h 800
     
-    costs_labels = ['Costo total por materiales:', 'Total mano de obra:', 'Total Flete:','Costo por imprevistos:', 'COSTO TOTAL DEL PROYECTO:']
-    header_labels = ['Fecha:', 'Cliente:', 'R.T.N.:', 'No. Factura:', 'No. Pagina:']
+    costs_labels = ['Costo total por materiales:']
+    header_labels = ['Fecha:', 'Cliente:', 'R.T.N.:', 'No. Cotizacion:', 'No. Pagina:']
     heading_labels = [('Codigo', 10), ('Material', 100), ('Costo Unidad Lps.', 430), ('Cantidad', 540), ('Costo Total Lps., ISV incluido', 600)]
     
     def on_enter1(event):
         vl = event.widget.get()
         for canvas in canvas_lst:
-            canvas.create_text(90, 50, text=vl, anchor='w', width=270, justify='left')
+            canvas.create_text(95, 50, text=vl, anchor='w', width=270, justify='left', font=my_font2)
         event.widget.destroy()
     def on_enter2(event):
         vl = event.widget.get()
         for canvas in canvas_lst:
-            canvas.create_text(90, 70, text=vl, anchor='w', width=270, justify='left')
+            canvas.create_text(95, 70, text=vl, anchor='w', width=270, justify='left', font=my_font2)
         event.widget.destroy()
     
     sublsts = list(create_sublists(detailed_lst, 20))
@@ -199,50 +217,50 @@ def generate_Budget():
         cv.pack(side=TOP, fill=BOTH, expand=1)
         
         # Put the date on each canvas
-        cv.create_text(90, 30, text=today, anchor='w', width=270, justify='left')
+        cv.create_text(95, 30, text=today, anchor='w', width=270, justify='left', font=my_font2)
 
         # Put the receipt number on each canvas
-        cv.create_text(90, 90, text=f'PEG{today}-{hr}{mn}{sc}', anchor='w', width=270, justify='left')
+        cv.create_text(95, 90, text=f'PEG{today}-{hr}{mn}{sc}', anchor='w', width=270, justify='left', font=my_font2)
 
         # Put the page number on each canvas
-        cv.create_text(90, 110, text=f'{idx+1} of {len(canvas_lst)}', anchor='w', width=270, justify='left')
+        cv.create_text(95, 110, text=f'{idx+1} of {len(canvas_lst)}', anchor='w', width=270, justify='left', font=my_font2)
         
         # Put the page header on each canvas
         for i in range(len(header_labels)):
-            cv.create_text(10, i*20+30, text=header_labels[i], anchor='w', width=300, justify='left')
+            cv.create_text(10, i*20+30, text=header_labels[i], anchor='w', width=300, justify='left', font=my_font)
         
         # Put company information on canvas
-        cv.create_text(690, 85, text='Cel: +504 9799-2662', anchor='e', justify='right')
-        cv.create_text(690, 100, text='Email: ventas@peginservice.com', anchor='e', justify='right')
-        cv.create_text(690, 115, text='Col. Miraflores, Calle Guanaja # 1884, Tegucigalpa, Honduras', anchor='e', justify='right')
+        cv.create_text(690, 85, text='Cel: +504 9799-2662', anchor='e', justify='right', font=my_font)
+        cv.create_text(690, 100, text='Email: ventas@peginservice.com', anchor='e', justify='right', font=my_font)
+        cv.create_text(690, 115, text='Col. Miraflores, Calle Guanaja # 1884, Tegucigalpa, Honduras', anchor='e', justify='right', font=my_font)
         # Put the table header on each canvas
         for i in range(len(heading_labels)):
-            cv.create_text(heading_labels[i][1], 155, text=heading_labels[i][0], anchor='w', width=100, justify='center')
+            cv.create_text(heading_labels[i][1], 155, text=heading_labels[i][0], anchor='w', width=100, justify='center', font=my_font)
         cv.create_line(10, 170, 690, 170, capstyle='round')
         
         # Fill out the table for each canvas
         for i in range(len(sub_lst)):
-            cv.create_text(10, 180+i*30, text=sub_lst[i][0], anchor='w', justify='left', width=70, fill='black')
-            cv.create_text(60, 180+i*30, text=sub_lst[i][1], anchor='w', justify='left', width=370, fill='black')
-            cv.create_text(460, 180+i*30, text=sub_lst[i][2], anchor='w', justify='left', width=70, fill='black')
-            cv.create_text(560, 180+i*30, text=sub_lst[i][3], anchor='w', justify='left', width=70, fill='black')
+            cv.create_text(10, 180+i*30, text=sub_lst[i][0], anchor='w', justify='left', width=70, fill='black', font=my_font2)
+            cv.create_text(60, 180+i*30, text=sub_lst[i][1], anchor='w', justify='left', width=370, fill='black', font=my_font2)
+            cv.create_text(460, 180+i*30, text=sub_lst[i][2], anchor='w', justify='left', width=70, fill='black', font=my_font2)
+            cv.create_text(560, 180+i*30, text=sub_lst[i][3], anchor='w', justify='left', width=70, fill='black', font=my_font2)
         for i in range(len(cost_sub_lst)):
-            cv.create_text(630, 180+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='red')
+            cv.create_text(630, 180+i*30, text=cost_sub_lst[i], anchor='w', justify='left', width=70, fill='black', font=my_font2)
         if idx == len(canvas_lst)-1:
-            cv.create_text(10, 180+len(sub_lst)*30, text="Resumen de Costos: ", anchor='w', justify='left', width=150, fill='black')
+            cv.create_text(10, 180+len(sub_lst)*30, text="Resumen de Costos: ", anchor='w', justify='left', width=150, fill='black', font=my_font)
             line = cv.create_line(10, 190+len(sub_lst)*30, 690, 190+len(sub_lst)*30, capstyle='butt')
             for i in range(len(costs_labels)):
-                cv.create_text(530, 210+len(sub_lst)*30+i*20, text=costs_labels[i], anchor='e', justify='right', width=300, fill='black')
-                cv.create_text(570, 210+len(sub_lst)*30+i*20, text=f'Lps. {resumen_costos[i]}', anchor='w', justify='left', width=70, fill='red')
-                if i>3:
+                cv.create_text(530, 210+len(sub_lst)*30+i*20, text=costs_labels[i], anchor='e', justify='right', width=300, fill='black', font=my_font)
+                cv.create_text(570, 210+len(sub_lst)*30+i*20, text=f'Lps. {resumen_costos[i]}', anchor='w', justify='left', width=70, fill='black', font=my_font)
+                if i==0:
                     cv.create_line(20, 310+len(sub_lst)*30+i*20, 150, 310+len(sub_lst)*30+i*20)
                     cv.create_line(200, 310+len(sub_lst)*30+i*20, 330, 310+len(sub_lst)*30+i*20)
-                    cv.create_text(20, 320+len(sub_lst)*30+i*20, text="Ing. Cesar Parada", anchor='w', justify='left', width=100, fill='red')
-                    cv.create_text(200, 320+len(sub_lst)*30+i*20, text="Cliente", anchor='w', justify='left', width=70, fill='red')
+                    cv.create_text(20, 320+len(sub_lst)*30+i*20, text="Ing. Cesar Parada", anchor='w', justify='left', width=100, fill='black', font=my_font)
+                    cv.create_text(200, 320+len(sub_lst)*30+i*20, text="Cliente", anchor='w', justify='left', width=70, fill='black', font=my_font)
                     cv.create_image(80, 250+len(sub_lst)*30+i*20, image=signature_gif)
 def create_canvas(lst, frame):
     for idx in range(len(lst)):
-        canvas = Canvas(frame, highlightbackground='red', bg='yellow', width=700, height=page_cap)
+        canvas = Canvas(frame, highlightbackground='black', bg='yellow', width=700, height=page_cap)
         yield canvas
     
 def create_sublists(lst, size):
@@ -299,7 +317,7 @@ def treeview_sort_column(tv, col, reverse):
 logo_gif = PhotoImage(file='peginservice.gif')
 signature_gif = PhotoImage(file='firma.gif')
 logo_lb = ttk.Label(content, image=logo_gif, relief='ridge') #relief: flat, groove, raised, ridge, solid, or sunken
-titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center') 
+titlelbl = ttk.Label(content, text='LISTA DE MATERIALES PARA ELECTRIFICAR', justify='center', font=("Arial", 16)) 
 codelbl = ttk.Label(content, text='Codigo:')
 matlbl = ttk.Label(content, text='Material:')
 pricelbl = ttk.Label(content, text='Precio unidad:')
@@ -310,8 +328,8 @@ priceEntry = ttk.Entry(content, textvariable=price)
 
 Add = ttk.Button(content, text='Agregar', command=add_toDb, width=25)
 Remove = ttk.Button(content, text='Eliminar', command=remove_fromDb, width=25)
-AddtoBudget = ttk.Button(content, text='Agregar a Presupuesto', command=add_toBudget, width=25)
-RemovefromBudget = ttk.Button(content, text='Eliminar de Presupuesto', command=remove_fromBudget, width=25)
+AddtoBudget = ttk.Button(content, text='Agregar a Cotizacion', command=add_toBudget, width=25)
+RemovefromBudget = ttk.Button(content, text='Eliminar de Cotizacion', command=remove_fromBudget, width=25)
 Generate = ttk.Button(content, text='Generar', command=generate_Budget, width=25)
 
 cols1 = ['Código', 'Material', 'Costo unidad'] 
