@@ -9,14 +9,13 @@ import openpyxl
 import os
 import datetime as dt
 import subprocess
-import time
 import win32api
 import win32print
 
 
 root = Tk()
 root.title("GENERADOR DE COTIZACIONES")
-root.geometry('1100x600')
+root.geometry('1150x600')
 root.iconphoto(False, PhotoImage(file='peginservice.gif'))
 # CREATE A MAIN FRAME
 content = ttk.Frame(root, padding=(5,5,12,12), borderwidth=5)
@@ -29,7 +28,8 @@ code = StringVar()
 mat = StringVar()
 price = StringVar()
 unit = StringVar()
-original_path = os.getcwd()
+discount = StringVar()
+discount.set('0.0')
 my_font = Font(
     family = 'Times',
     size = 9,
@@ -132,65 +132,12 @@ def treeview_sort_column(tv, col, reverse):
     # reverse sort next time
     tv.heading(col, command=lambda: treeview_sort_column(tv, col, not reverse))
 def generate_Budget():
-    def gen_pdf(*args):
-        # Convert to PDF
-        if cl_name.get() == '':
-            print("Client must have a name!")
-            return
-        path_to_usr = os.path.expanduser('~')
-        if os.path.exists(f'{path_to_usr}\Cotizaciones - {dt.datetime.today().strftime("%B")}'):
-            print("Directory exists")
-        else:
-            print('create new directory')
-            os.makedirs(f'{path_to_usr}\Cotizaciones - {dt.datetime.today().strftime("%B")}', exist_ok=True)
-
-        current_dir = os.getcwd()
-        print('STEP 1: ', current_dir)
-        path_to_Documents = os.path.expanduser('~\Documents')
-        print('STEP 2: ', path_to_Documents)
-        os.makedirs(f'{path_to_Documents}/Cotizacion_{cl_name.get()}', exist_ok=True)
-        for i, cnv in enumerate(canvas_lst):
-            cnv.create_image(730, 40, image=logo_gif)
-            cnv.update()
-            cnv.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=420, height=1000, width=800)
-            process = subprocess.Popen(["ps2pdf", "tmp.ps", f"pagina_{i}.pdf"], shell=True)
-            process.wait()
-            os.remove('tmp.ps')
-            #os.rename(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
-            os.replace(f'{current_dir}/pagina_{i}.pdf', f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}/pagina_{i}.pdf')
-            #shutil.move(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
-
-        merger = PdfFileMerger()
-        path_to_files = f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}/'
-    
-        print('STEP 3: ', path_to_files)
-        # Get the file names in the directory
-        if os.path.exists(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("B")}/{cl_name.get()}_Cotizacion.pdf'):
-            os.remove(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("B")}/{cl_name.get()}_Cotizacion.pdf')
-            print("File removed!")
-        for root, dirs, file_names in os.walk(path_to_files):        
-                for file_name in file_names:
-                    if file_name.startswith("pagina"):
-                        merger.append(path_to_files + file_name)
-        print("FINISH MERGING")    
-        
-        merger.write(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}/{cl_name.get()}_Cotizacion.pdf')
-        merger.close()
-    
-        # Clean directory
-        for root, dirs, file_names in os.walk(path_to_files):
-            for file_name in file_names:
-                if file_name.startswith("pagina"):
-                    os.remove(path_to_files + file_name)
-        print("FINISH CLEANING")
     def pago_lbl():
         if not canvas_lst[0].itemcget('tagpago', 'text'):
-            print('does not exists')
-            canvas_lst[0].create_text(400, 50, text=pago.get(), anchor='w', width=270, justify='left', font=my_font2, tags='tagpago')
+            canvas_lst[0].create_text(400, 20, text=pago.get(), anchor='w', width=270, justify='left', font=my_font2, tags='tagpago')
         else:
-            print('exists, so delete a create again')
             canvas_lst[0].delete('tagpago')
-            canvas_lst[0].create_text(400, 50, text=pago.get(), anchor='w', width=270, justify='left', font=my_font2, tags='tagpago')
+            canvas_lst[0].create_text(400, 20, text=pago.get(), anchor='w', width=270, justify='left', font=my_font2, tags='tagpago')
     def on_enter1(event):
         vl = event.widget.get()
         for canvas in canvas_lst:
@@ -201,23 +148,81 @@ def generate_Budget():
         for canvas in canvas_lst:
             canvas.create_text(95, 70, text=vl, anchor='w', width=270, justify='left', font=my_font2)
         event.widget.destroy()
+    def save_as():
+        # Convert to PDF
+        if cl_name.get() == '':
+            print("Client must have a name!")
+            return
+
+        print("STEP 1")
+        # 1. Check if directory exists or create a directory to save pdf in.
+        path_to_usr = os.path.expanduser('~')
+        if os.path.exists(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}'):
+            print("Directory exists")
+        else:
+            print('create new directory')
+            os.makedirs(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}', exist_ok=True)
+        
+        filename_to_save = filedialog.asksaveasfilename(
+            initialdir=f'C:/Users/Samuel Ramos/Cotizaciones - {dt.datetime.today().strftime("%B")}', title='Save as',
+            defaultextension='.pdf', initialfile=f'{cl_name.get()}_cotizacion'
+        )
+        
+        print("STEP 2: Create and move pdf files")
+        # 2. Convert canvas to pdf and move pdfs to directory created in #1.
+        current_dir = os.getcwd()
+        for i, cnv in enumerate(canvas_lst):
+            cnv.create_image(730, 40, image=logo_gif)
+            cnv.update()
+            cnv.postscript(file='tmp.ps', fontmap='-*-Courier-Bold-R-Normal--*-120-*', colormode='color', pagex=300, pagey=420, height=1000, width=800)
+            process = subprocess.Popen(["ps2pdf", "tmp.ps", f"pagina_{i}.pdf"], shell=True)
+            process.wait()
+            os.remove('tmp.ps')
+            #os.rename(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
+            os.replace(f'{current_dir}/pagina_{i}.pdf', f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}/pagina_{i}.pdf')
+            #shutil.move(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
+        
+        print('STEP 3: Merge files ')
+        # 3. Merge pdf file into a single pdf. Replace merged pdf file with new one if it already exists.
+        if os.path.exists(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("B")}/{cl_name.get()}_Cotizacion.pdf'):
+            os.remove(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("B")}/{cl_name.get()}_Cotizacion.pdf')
+        
+        merger = PdfFileMerger()
+        path_to_files = f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}/'
+        for root, dirs, file_names in os.walk(path_to_files):        
+                for file_name in file_names:
+                    if file_name.startswith("pagina"):
+                        merger.append(path_to_files + file_name)    
+        merger.write(filename_to_save)
+        merger.close()
+        
+        print("STEP 4: Clean paginas")
+        # 4. Delete remaining pdf files.
+        for root, dirs, file_names in os.walk(path_to_files):
+            for file_name in file_names:
+                if file_name.startswith("pagina"):
+                    os.remove(path_to_files + file_name)
+        print("FINISH CLEANING")
+
+        # 5. Append path of pdf file to a list.
+        files_to_print_lst.append(filename_to_save)
+        print('directory changed')
     def print_hard_copy():
-        printer_name = win32print.GetDefaultPrinter()
-        print(printer_name)
-        file_to_print = filedialog.askopenfile(
-            initialdir = f'C:/Users/Samuel Ramos/Cotizaciones - {dt.datetime.today().strftime("%B")}', title="Select file",
-            filetypes=(('pdf files', '*.pdf'), ('all files', '*.*')))
-        print('file to print read')
-        if file_to_print:
-            win32api.ShellExecute(0, 'print', file_to_print.name, None, '.', 0)
+        if files_to_print_lst:
+            path_to_file = files_to_print_lst[-1]
+            print("File exists! Lets print!")
+            win32api.ShellExecute(0, 'print', path_to_file, None, '.', 0)
+            print(files_to_print_lst)
+        else:
+            messagebox.showerror("Error!", "Guarde una copia de su documento pdf antes de imprimir.")
         
     hr = dt.datetime.today().hour
     mn = dt.datetime.today().minute
     sc = dt.datetime.today().second
+    files_to_print_lst = []
     
     # COSTS CALCULATIONS
     if not tv2.get_children():
-        print("Budget is empty!")
         return
     iids_for_budget = tv2.get_children()
     detailed_lst = []
@@ -231,49 +236,51 @@ def generate_Budget():
         total_item_costs_lst.append(total_cost_per_item)
         isv += round(0.15 * float(values_lst[3]) * float(values_lst[4]), 2)
     total_bruto = round(sum(total_item_costs_lst), 2)
-    total_neto = total_bruto + isv
-    resumen_costos = [total_bruto, isv, total_neto]
+    total_discount = round(-float(discount.get()) / 100 * total_bruto, 2)
+    total_neto = round(total_bruto + isv + total_discount, 2)
+    resumen_costos = [total_bruto, isv, total_discount, total_neto]
     
-    budget_wn = Toplevel(content, borderwidth=20, width=800)
+    budget_wn = Toplevel(content, borderwidth=20, width=800, height=1000)
     budget_wn.title('Cotizacion')
-    budget_wn.iconphoto('False', PhotoImage(file='peginservice.gif'))
-
-    logo_gif = PhotoImage(file='peginservice.gif', palette=1)
+    budget_wn.iconphoto('False', PhotoImage(file='C:/Users/Samuel Ramos/Python/Budget_Generator_System/peginservice.gif'))
+    # disable parent window while child window is open
+    budget_wn.grab_set()
+    logo_gif = PhotoImage(file='C:/Users/Samuel Ramos/Python/Budget_Generator_System/peginservice.gif', palette=1)
 
     # Create a main frame
-    main_frame = Frame(budget_wn, width=800)
+    main_frame = Frame(budget_wn, width=800, height=1000)
     main_frame.pack(fill=BOTH, expand=1)
     
     # Create a save pdf button
     pago = StringVar()
-    forma_pago = ttk.Checkbutton(main_frame, text='Pago a deposito', variable=pago, onvalue='Deposito', offvalue='Contado', command=pago_lbl).pack(side=LEFT)
+    forma_pago = ttk.Checkbutton(main_frame, text='Pago a credito', variable=pago, onvalue='*Pago a credito*', offvalue='*Pago por contado*', command=pago_lbl)
+    forma_pago.grid(column=2, row=0, sticky='w')
     
-    save_pdf = ttk.Button(main_frame, text='Guardar como PDF', command=gen_pdf).pack(side=BOTTOM, fill=X)
-    print_hc = ttk.Button(main_frame, text='Imprimir', command=print_hard_copy).pack(side=LEFT, fill=X)
+    print_hc = ttk.Button(main_frame, text='Imprimir', command=print_hard_copy)
+    print_hc.grid(column=1, row=0, sticky='w')
+    save_as = ttk.Button(main_frame, text='Save as', command=save_as)
+    save_as.grid(column=0, row=0, sticky='w')
     # Create a canvas
-    canvas = Canvas(main_frame, highlightbackground='black', bg='gray', width=800) 
-    canvas.pack(side=LEFT, fill=BOTH, expand=1)
-    
+    canvas = Canvas(main_frame, highlightbackground='black', bg='gray', width=800, height=500) 
+    canvas.grid(column=0, row=1, columnspan=5)
     # Create a Scrollbar
     sb3 = ttk.Scrollbar(main_frame, orient=VERTICAL, command=canvas.yview)
-    sb3.pack(side=RIGHT, fill=Y)
+    sb3.grid(column=5, row=1, sticky='ns')
  
     # Configure canvas
     canvas.configure(yscrollcommand=sb3.set)
     canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
 
     # Add another frame inside canvas
-    second_frame = Frame(canvas, height=800) # h 800
+    second_frame = Frame(canvas, height=800) 
     
     # Add new frame to a window in the canvas
     num_pages = len(detailed_lst)//20 + 1
-    canvas.create_window((0,0), window=second_frame, anchor='nw', height=page_cap*num_pages) #h 800
+    canvas.create_window((0,0), window=second_frame, anchor='nw', height=page_cap*num_pages) 
     
-    costs_labels = ['Costo total bruto:','total impuesto sobre venta:' , 'Costo total neto:']
+    costs_labels = ['Costo total bruto:','Total impuesto sobre venta:' ,'Descuento costo total:', 'COSTO TOTAL NETO:']
     header_labels = ['Fecha:', 'Cliente:', 'R.T.N.:', 'No. Cotizacion:', 'No. Pagina:']
     heading_labels = [('Codigo', 10), ('Material', 100), ('Unidad', 490),('Costo Unidad Lps.', 540), ('Cantidad', 640), ('Costo Total Lps., ISV incluido', 700)]
-    
-    
     
     sublsts = list(create_sublists(detailed_lst, 20))
     total_item_costs_sublsts = list(create_sublists(total_item_costs_lst, 20))
@@ -336,9 +343,7 @@ def generate_Budget():
                 cv.create_text(670, 210+len(sub_lst)*30+i*20, text=f'Lps. {resumen_costos[i]}', anchor='w', justify='left', width=70, fill='black', font=my_font)
                 if i==0:
                     cv.create_line(20, 310+len(sub_lst)*30+i*20, 150, 310+len(sub_lst)*30+i*20)
-                    cv.create_line(200, 310+len(sub_lst)*30+i*20, 330, 310+len(sub_lst)*30+i*20)
                     cv.create_text(20, 320+len(sub_lst)*30+i*20, text="Ing. Cesar Parada", anchor='w', justify='left', width=100, fill='black', font=my_font)
-                    cv.create_text(200, 320+len(sub_lst)*30+i*20, text="Cliente", anchor='w', justify='left', width=70, fill='black', font=my_font)
                     cv.create_image(80, 250+len(sub_lst)*30+i*20, image=signature_gif)
 
 # CREATE WIDGETS
@@ -351,11 +356,13 @@ codelbl = ttk.Label(content, text='Codigo:')
 matlbl = ttk.Label(content, text='Material:')
 pricelbl = ttk.Label(content, text='Precio unidad:')
 unitlbl = ttk.Label(content, text='Unidad:')
+discount_lbl = ttk.Label(content, text='Descuento %:')
 
 codeEntry = ttk.Entry(content, textvariable=code)
 matEntry = ttk.Entry(content, textvariable=mat)
 priceEntry = ttk.Entry(content, textvariable=price)
 unitEntry = ttk.Entry(content, textvariable=unit)
+discountEntry = ttk.Entry(content, textvariable=discount)
 
 Add = ttk.Button(content, text='Agregar', command=add_toDb, width=25)
 Remove = ttk.Button(content, text='Eliminar', command=remove_fromDb, width=25)
@@ -364,7 +371,6 @@ RemovefromBudget = ttk.Button(content, text='Eliminar de Cotizacion', command=re
 Generate = ttk.Button(content, text='Generar', command=generate_Budget, width=25)
 
 cols = ['Código', 'Material', 'Unidad', 'Costo unidad', 'Cantidad']
-
 tv1 = ttk.Treeview(content, columns=cols[:4], show='headings', height=15)
 tv1.column(cols[0], width=15)
 tv1.column(cols[1], width=150)
@@ -386,7 +392,6 @@ for col2 in tv2['column']:
     tv2.heading(col2, text=col2, command=lambda: treeview_sort_column(tv2, 'Material', False))
 sb2 = ttk.Scrollbar(content, orient=VERTICAL, command=tv2.yview)
 tv2.config(yscrollcommand=sb2.set)
-# SECOND WINDOW WIDGETS
 
 # GRID WIDGETS
 titlelbl.grid(column=0, row=0, columnspan=8, padx=5, pady=5, sticky=N)
@@ -394,21 +399,24 @@ codelbl.grid(column=0, row=1, padx=5, pady=5, sticky=W)
 matlbl.grid(column=0, row=2, padx=5, pady=5, sticky=W)
 unitlbl.grid(column=0, row=3, padx=5, pady=5, sticky=W)
 pricelbl.grid(column=0, row=4, padx=5, pady=5, sticky=W)
+discount_lbl.grid(column=4, row=5, padx=5, pady=5, sticky='we')
 
 codeEntry.grid(column=1, row=1, padx=5, pady=5,  sticky='we')
 matEntry.grid(column=1, row=2, columnspan=2, padx=5, pady=5, sticky='we')
 unitEntry.grid(column=1, row=3, padx=5, pady=5, sticky='we')
 priceEntry.grid(column=1, row=4, padx=5, pady=5, sticky='we')
+discountEntry.grid(column=5, row=5, padx=5, pady=5, sticky='we')
+
 Add.grid(column=0, row=5, padx=5, pady=5, sticky='we')
 Remove.grid(column=1, row=5, padx=5, pady=5, sticky='we')
 AddtoBudget.grid(column=2, row=5, padx=5, pady=5, sticky='we')
-RemovefromBudget.grid(column=4, row=5, padx=5, pady=5, sticky='we')
-Generate.grid(column=5, row=5, padx=5, pady=5, sticky='we')
+RemovefromBudget.grid(column=6, row=5, padx=5, pady=5, sticky='we')
+Generate.grid(column=7, row=5, padx=5, pady=5, sticky='we')
 tv1.grid(column=0, row=6, columnspan=3, padx=5, pady=5, sticky="nsew")
-tv2.grid(column=4, row=6, columnspan=3, padx=5, pady=5, sticky='nsew')
+tv2.grid(column=4, row=6, columnspan=4, padx=5, pady=5, sticky='nsew')
 sb1.grid(column=3, row=6, padx=5, pady=5, sticky="ns")
-sb2.grid(column=7, row=6, padx=5, pady=5, sticky='ns')
-logo_lb.grid(column=6, row=1, rowspan=3, padx=5, pady=5, sticky='e')
+sb2.grid(column=8, row=6, padx=5, pady=5, sticky='ns')
+logo_lb.grid(column=7, row=1, rowspan=3, padx=5, pady=5, sticky='e')
 
 #root.grid_columnconfigure(0, weight=1)
 #root.grid_rowconfigure(0, weight=1)
