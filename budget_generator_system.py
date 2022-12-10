@@ -12,7 +12,6 @@ import subprocess
 import win32api
 import win32print
 
-
 root = Tk()
 root.title("GENERADOR DE COTIZACIONES")
 root.geometry('1150x600')
@@ -49,11 +48,14 @@ my_font2 = Font(
 
 # FUNCTIONS
 def add_toDb():
-    if code.get() != '' and mat.get() != '' and price.get() != '' and unit.get() != '':
-        id = tv1.insert('', 'end', values=[code.get(), mat.get(), unit.get(), float(price.get())])
-        ws.append([code.get(), mat.get(), unit.get(), price.get()])
-        wb.save('database.xlsx')
-        code.set(''), mat.set(''), unit.set(''), price.set('')
+    try:
+        if code.get() != '' and mat.get() != '' and price.get() != '' and unit.get() != '':
+            id = tv1.insert('', 'end', values=[code.get(), mat.get(), unit.get(), float(price.get())])
+            ws.append([code.get(), mat.get(), unit.get(), price.get()])
+            wb.save('database.xlsx')
+            code.set(''), mat.set(''), unit.set(''), price.set('')
+    except ValueError:
+        print('Por favor, ingrese dato numerico en la casilla de precio.')
 def remove_fromDb():
     selected_item = tv1.selection()
     if selected_item:    
@@ -84,7 +86,7 @@ def update_tv1_entry(event):
         price.set(detaillst[3])
 def create_canvas(lst, frame):
     for idx in range(len(lst)):
-        canvas = Canvas(frame, highlightbackground='black', bg='yellow', width=800, height=page_cap)
+        canvas = Canvas(frame, highlightbackground='black', bg='#fdffc7', width=800, height=page_cap)
         yield canvas
 def create_sublists(lst, size):
     for i in range(0, len(lst), size):
@@ -164,7 +166,7 @@ def generate_Budget():
             os.makedirs(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}', exist_ok=True)
         
         filename_to_save = filedialog.asksaveasfilename(
-            initialdir=f'C:/Users/Samuel Ramos/Cotizaciones - {dt.datetime.today().strftime("%B")}', title='Save as',
+            initialdir=f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}', title='Save as',
             defaultextension='.pdf', initialfile=f'{cl_name.get()}_cotizacion'
         )
         
@@ -215,7 +217,7 @@ def generate_Budget():
             print(files_to_print_lst)
         else:
             messagebox.showerror("Error!", "Guarde una copia de su documento pdf antes de imprimir.")
-        
+    
     hr = dt.datetime.today().hour
     mn = dt.datetime.today().minute
     sc = dt.datetime.today().second
@@ -227,7 +229,7 @@ def generate_Budget():
     iids_for_budget = tv2.get_children()
     detailed_lst = []
     total_item_costs_lst = []
-    isv = 0
+    isv = 0.0
     for iid in iids_for_budget:
         detailed_row = tv2.item(iid)
         values_lst = detailed_row['values']
@@ -235,6 +237,7 @@ def generate_Budget():
         total_cost_per_item = round(float(values_lst[3]) * float(values_lst[4]), 2)
         total_item_costs_lst.append(total_cost_per_item)
         isv += round(0.15 * float(values_lst[3]) * float(values_lst[4]), 2)
+    isv = round(isv, 2)
     total_bruto = round(sum(total_item_costs_lst), 2)
     total_discount = round(-float(discount.get()) / 100 * total_bruto, 2)
     total_neto = round(total_bruto + isv + total_discount, 2)
@@ -242,10 +245,12 @@ def generate_Budget():
     
     budget_wn = Toplevel(content, borderwidth=20, width=800, height=1000)
     budget_wn.title('Cotizacion')
-    budget_wn.iconphoto('False', PhotoImage(file='C:/Users/Samuel Ramos/Python/Budget_Generator_System/peginservice.gif'))
+    path_to_usr = os.path.expanduser('~')
+    budget_wn.iconphoto('False', PhotoImage(file=f'{path_to_usr}/Python/Budget_Generator_System/peginservice.gif'))
     # disable parent window while child window is open
     budget_wn.grab_set()
-    logo_gif = PhotoImage(file='C:/Users/Samuel Ramos/Python/Budget_Generator_System/peginservice.gif', palette=1)
+    logo_gif = PhotoImage(file=f'{path_to_usr}/Python/Budget_Generator_System/peginservice.gif', palette=1)
+    
 
     # Create a main frame
     main_frame = Frame(budget_wn, width=800, height=1000)
@@ -345,11 +350,14 @@ def generate_Budget():
                     cv.create_line(20, 310+len(sub_lst)*30+i*20, 150, 310+len(sub_lst)*30+i*20)
                     cv.create_text(20, 320+len(sub_lst)*30+i*20, text="Ing. Cesar Parada", anchor='w', justify='left', width=100, fill='black', font=my_font)
                     cv.create_image(80, 250+len(sub_lst)*30+i*20, image=signature_gif)
+                    cv.create_image(250, 250+len(sub_lst)*30+i*20, image=stamp_gif)
 
 # CREATE WIDGETS
 # FIRST WINDOW WIDGETS
-logo_gif = PhotoImage(file='peginservice.gif')
-signature_gif = PhotoImage(file='firma.gif')
+path_to_usr = os.path.expanduser('~')
+logo_gif = PhotoImage(file=f'{path_to_usr}/Python/Budget_Generator_System/peginservice.gif')
+signature_gif = PhotoImage(file=f'{path_to_usr}/Python/Budget_Generator_System/firma.gif')
+stamp_gif = PhotoImage(file=f'{path_to_usr}/Python/Budget_Generator_System/new_stamp.gif', palette=1)
 logo_lb = ttk.Label(content, image=logo_gif, relief='ridge') #relief: flat, groove, raised, ridge, solid, or sunken
 titlelbl = ttk.Label(content, text='GENERADOR DE COTIZACIONES', justify='center', font=("Times", 16)) 
 codelbl = ttk.Label(content, text='Codigo:')
