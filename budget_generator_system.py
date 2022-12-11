@@ -10,41 +10,14 @@ import os
 import datetime as dt
 import subprocess
 import win32api
-import win32print
 
 root = Tk()
 root.title("GENERADOR DE COTIZACIONES")
 root.geometry('1150x600')
-root.iconphoto(False, PhotoImage(file='peginservice.gif'))
+root.iconphoto(False, PhotoImage(file='images/peginservice.gif'))
 # CREATE A MAIN FRAME
 content = ttk.Frame(root, padding=(5,5,12,12), borderwidth=5)
 content.grid(column=0, row=0, sticky='nsew')
-
-# VARIABLES
-page_cap = 1000
-today = dt.datetime.today().date()
-code = StringVar()
-mat = StringVar()
-price = StringVar()
-unit = StringVar()
-discount = StringVar()
-discount.set('0.0')
-my_font = Font(
-    family = 'Times',
-    size = 9,
-    weight = 'bold',
-    slant = 'roman',
-    underline = 0,
-    overstrike = 0
-)
-my_font2 = Font(
-    family = 'Times',
-    size = 9,
-    weight = 'normal',
-    slant = 'roman',
-    underline = 0,
-    overstrike = 0
-)
 
 # FUNCTIONS
 def add_toDb():
@@ -52,7 +25,7 @@ def add_toDb():
         if code.get() != '' and mat.get() != '' and price.get() != '' and unit.get() != '':
             id = tv1.insert('', 'end', values=[code.get(), mat.get(), unit.get(), float(price.get())])
             ws.append([code.get(), mat.get(), unit.get(), price.get()])
-            wb.save('database.xlsx')
+            wb.save(f'{path_to_usr}/Cotizaciones PegIn/database.xlsx')
             code.set(''), mat.set(''), unit.set(''), price.set('')
     except ValueError:
         print('Por favor, ingrese dato numerico en la casilla de precio.')
@@ -64,7 +37,7 @@ def remove_fromDb():
             if detaillst[0]==rw[0]:
                 ws.delete_rows(id+1)
                 break
-        wb.save('database.xlsx')
+        wb.save(f'{path_to_usr}/Cotizaciones PegIn/database.xlsx')
         tv1.delete(selected_item)
 def add_toBudget():
     selected_item = tv1.selection()
@@ -157,22 +130,18 @@ def generate_Budget():
             return
 
         print("STEP 1")
-        # 1. Check if directory exists or create a directory to save pdf in.
-        path_to_usr = os.path.expanduser('~')
-        if os.path.exists(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}'):
-            print("Directory exists")
-        else:
-            print('create new directory')
-            os.makedirs(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}', exist_ok=True)
+        # 1. Check if directory exists or create a directory to save pdf inside of.
+        if not os.path.exists(f'{path_to_usr}/Cotizaciones PegIn/Cotizaciones - {dt.datetime.today().strftime("%B")}'):
+            os.makedirs(f'{path_to_usr}/Cotizaciones PegIn/Cotizaciones - {dt.datetime.today().strftime("%B")}', exist_ok=True)
         
         filename_to_save = filedialog.asksaveasfilename(
-            initialdir=f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}', title='Save as',
+            initialdir=f'{path_to_usr}/Cotizaciones PegIn/Cotizaciones - {dt.datetime.today().strftime("%B")}', title='Save as',
             defaultextension='.pdf', initialfile=f'{cl_name.get()}_cotizacion'
         )
         
         print("STEP 2: Create and move pdf files")
         # 2. Convert canvas to pdf and move pdfs to directory created in #1.
-        current_dir = os.getcwd()
+        os.chdir(os.path.dirname(filename_to_save))
         for i, cnv in enumerate(canvas_lst):
             cnv.create_image(730, 40, image=logo_gif)
             cnv.update()
@@ -180,17 +149,10 @@ def generate_Budget():
             process = subprocess.Popen(["ps2pdf", "tmp.ps", f"pagina_{i}.pdf"], shell=True)
             process.wait()
             os.remove('tmp.ps')
-            #os.rename(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
-            os.replace(f'{current_dir}/pagina_{i}.pdf', f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}/pagina_{i}.pdf')
-            #shutil.move(current_dir+"/"+f"Budget_{i}.pdf", f'C:/Users/Samuel Ramos/Documents/{cl_name.get()}/Budget_{i}.pdf')
-        
-        print('STEP 3: Merge files ')
-        # 3. Merge pdf file into a single pdf. Replace merged pdf file with new one if it already exists.
-        if os.path.exists(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("B")}/{cl_name.get()}_Cotizacion.pdf'):
-            os.remove(f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("B")}/{cl_name.get()}_Cotizacion.pdf')
-        
+            
+        print('STEP 3: Merge files ')        
         merger = PdfFileMerger()
-        path_to_files = f'{path_to_usr}/Cotizaciones - {dt.datetime.today().strftime("%B")}/'
+        path_to_files = os.path.dirname(filename_to_save) + '/'
         for root, dirs, file_names in os.walk(path_to_files):        
                 for file_name in file_names:
                     if file_name.startswith("pagina"):
@@ -208,11 +170,10 @@ def generate_Budget():
 
         # 5. Append path of pdf file to a list.
         files_to_print_lst.append(filename_to_save)
-        print('directory changed')
+
     def print_hard_copy():
         if files_to_print_lst:
             path_to_file = files_to_print_lst[-1]
-            print("File exists! Lets print!")
             win32api.ShellExecute(0, 'print', path_to_file, None, '.', 0)
             print(files_to_print_lst)
         else:
@@ -245,13 +206,11 @@ def generate_Budget():
     
     budget_wn = Toplevel(content, borderwidth=20, width=800, height=1000)
     budget_wn.title('Cotizacion')
-    path_to_usr = os.path.expanduser('~')
-    budget_wn.iconphoto('False', PhotoImage(file=f'{path_to_usr}/Python/Budget_Generator_System/peginservice.gif'))
+    budget_wn.iconphoto('False', PhotoImage(file=f'{path_to_program}/images/peginservice.gif'))
     # disable parent window while child window is open
     budget_wn.grab_set()
-    logo_gif = PhotoImage(file=f'{path_to_usr}/Python/Budget_Generator_System/peginservice.gif', palette=1)
+    logo_gif = PhotoImage(file=f'{path_to_program}/images/peginservice.gif', palette=1)
     
-
     # Create a main frame
     main_frame = Frame(budget_wn, width=800, height=1000)
     main_frame.pack(fill=BOTH, expand=1)
@@ -345,19 +304,45 @@ def generate_Budget():
             line = cv.create_line(10, 190+len(sub_lst)*30, 790, 190+len(sub_lst)*30, capstyle='butt')
             for i in range(len(costs_labels)):
                 cv.create_text(630, 210+len(sub_lst)*30+i*20, text=costs_labels[i], anchor='e', justify='right', width=300, fill='black', font=my_font)
-                cv.create_text(670, 210+len(sub_lst)*30+i*20, text=f'Lps. {resumen_costos[i]}', anchor='w', justify='left', width=70, fill='black', font=my_font)
+                cv.create_text(670, 210+len(sub_lst)*30+i*20, text=f'Lps. {resumen_costos[i]}', anchor='w', justify='left', width=150, fill='black', font=my_font)
                 if i==0:
                     cv.create_line(20, 310+len(sub_lst)*30+i*20, 150, 310+len(sub_lst)*30+i*20)
                     cv.create_text(20, 320+len(sub_lst)*30+i*20, text="Ing. Cesar Parada", anchor='w', justify='left', width=100, fill='black', font=my_font)
                     cv.create_image(80, 250+len(sub_lst)*30+i*20, image=signature_gif)
                     cv.create_image(250, 250+len(sub_lst)*30+i*20, image=stamp_gif)
 
-# CREATE WIDGETS
+# VARIABLES
+page_cap = 1000
+today = dt.datetime.today().date()
+code = StringVar()
+mat = StringVar()
+price = StringVar()
+unit = StringVar()
+discount = StringVar()
+discount.set('0.0')
+my_font = Font(
+    family = 'Times',
+    size = 9,
+    weight = 'bold',
+    slant = 'roman',
+    underline = 0,
+    overstrike = 0
+)
+my_font2 = Font(
+    family = 'Times',
+    size = 9,
+    weight = 'normal',
+    slant = 'roman',
+    underline = 0,
+    overstrike = 0
+)
+
 # FIRST WINDOW WIDGETS
 path_to_usr = os.path.expanduser('~')
-logo_gif = PhotoImage(file=f'{path_to_usr}/Python/Budget_Generator_System/peginservice.gif')
-signature_gif = PhotoImage(file=f'{path_to_usr}/Python/Budget_Generator_System/firma.gif')
-stamp_gif = PhotoImage(file=f'{path_to_usr}/Python/Budget_Generator_System/new_stamp.gif', palette=1)
+path_to_program = os.getcwd()
+logo_gif = PhotoImage(file='images/peginservice.gif')
+signature_gif = PhotoImage(file='images/firma.gif')
+stamp_gif = PhotoImage(file='images/new_stamp.gif', palette=1)
 logo_lb = ttk.Label(content, image=logo_gif, relief='ridge') #relief: flat, groove, raised, ridge, solid, or sunken
 titlelbl = ttk.Label(content, text='GENERADOR DE COTIZACIONES', justify='center', font=("Times", 16)) 
 codelbl = ttk.Label(content, text='Codigo:')
@@ -368,8 +353,8 @@ discount_lbl = ttk.Label(content, text='Descuento %:')
 
 codeEntry = ttk.Entry(content, textvariable=code)
 matEntry = ttk.Entry(content, textvariable=mat)
-priceEntry = ttk.Entry(content, textvariable=price)
 unitEntry = ttk.Entry(content, textvariable=unit)
+priceEntry = ttk.Entry(content, textvariable=price)
 discountEntry = ttk.Entry(content, textvariable=discount)
 
 Add = ttk.Button(content, text='Agregar', command=add_toDb, width=25)
@@ -426,19 +411,16 @@ sb1.grid(column=3, row=6, padx=5, pady=5, sticky="ns")
 sb2.grid(column=8, row=6, padx=5, pady=5, sticky='ns')
 logo_lb.grid(column=7, row=1, rowspan=3, padx=5, pady=5, sticky='e')
 
-#root.grid_columnconfigure(0, weight=1)
-#root.grid_rowconfigure(0, weight=1)
-#content.grid_columnconfigure(1, weight=1)
-#content.grid_rowconfigure(0, weight=1)
-
 # CHECK IF THERE IS A DB PRESENT
-path = 'database.xlsx'
-isExist = os.path.exists(path)
+db_path = f'{path_to_usr}/Cotizaciones PegIn/database.xlsx'
+isExist = os.path.exists(db_path)
+
 if isExist:
-    wb = openpyxl.load_workbook('database.xlsx')
+    wb = openpyxl.load_workbook(db_path)
     ws = wb.active
     fill_treeview()
 else:
+    os.makedirs(f'{path_to_usr}/Cotizaciones PegIn')
     wb = Workbook()
     ws = wb.active
 
